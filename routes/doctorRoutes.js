@@ -1,0 +1,44 @@
+const express = require("express");
+const doctorController = require("../controllers/doctorController");
+const authController = require("../controllers/authController");
+const appointmentRouter = require("./appointmentRoutes");
+const validate = require("../middlewares/validationMiddleware");
+const { updateDoctorSchema } = require("../utils/validators/doctorSchema");
+
+const { doctorIdSchema } = require("../utils/validators/doctorSchema");
+
+const router = express.Router();
+// All doctors
+router.route("/").get(authController.protect, doctorController.getAllDoctors);
+
+router.get(
+  "/me",
+  authController.protect,
+  authController.restrictTo("doctor"),
+  doctorController.getMyProfile,
+);
+
+router.use("/:doctorId/appointments", appointmentRouter);
+
+// Single doctor
+router
+  .route("/:id")
+  .get(
+    validate(doctorIdSchema),
+    authController.protect,
+    authController.restrictTo("doctor", "patient"),
+    doctorController.getDoctor,
+  )
+  .patch(
+    validate(updateDoctorSchema),
+    authController.protect,
+    authController.restrictTo("doctor"),
+    doctorController.updateDoctor,
+  )
+  .delete(
+    validate(doctorIdSchema),
+    authController.protect,
+    doctorController.deleteDoctor,
+  );
+
+module.exports = router;
