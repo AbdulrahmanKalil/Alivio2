@@ -14,7 +14,6 @@ const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
-
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
@@ -40,7 +39,6 @@ const createSendToken = (user, statusCode, res) => {
     data: { user },
   });
 };
-
 // ================= AUTH =================
 const signupPatient = catchAsync(async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -88,7 +86,6 @@ const signupPatient = catchAsync(async (req, res, next) => {
     throw err; // catchAsync handles it
   }
 });
-
 const signupDoctor = catchAsync(async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -143,7 +140,6 @@ const signupDoctor = catchAsync(async (req, res, next) => {
     throw err; // catchAsync will handle it
   }
 });
-
 const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -159,9 +155,7 @@ const login = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
-
 // ================= PROTECT =================
-
 const protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there
   let token;
@@ -224,7 +218,6 @@ const protect = catchAsync(async (req, res, next) => {
 
   next();
 });
-
 // ================= RESTRICT =================
 const restrictTo = (...roles) => (req, res, next) => {
   if (!roles.includes(req.user.role)) {
@@ -275,7 +268,6 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     );
   }
 });
-
 const resetPassword = catchAsync(async (req, res, next) => {
   const hashedToken = crypto
     .createHash("sha256")
@@ -300,7 +292,6 @@ const resetPassword = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
-
 const updatePassword = catchAsync(async (req, res, next) => {
   // ✅ FIX HERE
   const user = await User.findById(req.user.id).select("+password");
@@ -315,7 +306,6 @@ const updatePassword = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
-
 // ================= EXPORT =================
 module.exports = {
   signupPatient,

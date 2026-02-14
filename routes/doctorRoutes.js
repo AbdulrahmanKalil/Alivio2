@@ -41,4 +41,11 @@ router
     doctorController.deleteDoctor,
   );
 
+// router.get(
+//   "/:id/schedule",
+//   validate(doctorIdSchema),
+//   authController.protect,
+//   doctorController.getDoctorSchedule,
+// );
+
 module.exports = router;

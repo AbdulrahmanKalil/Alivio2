@@ -18,12 +18,14 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-  message: "Too many requests from this IP, please try again in an hour!",
+  windowMs: 60 * 60 * 1000,
+  max: 100,
+  message: "Too many requests from this IP, please try again in 60 minutes!",
 });
-// Apply the rate limiting middleware to all requests.
-app.use("/api", limiter);
+
+if (process.env.NODE_ENV === "production") {
+  app.use("/api", limiter);
+}
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: "100kb" }));
