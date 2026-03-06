@@ -4,7 +4,7 @@ const doctorSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    // required: true,
     unique: true,
   },
   displayName: {
@@ -117,7 +117,7 @@ const doctorSchema = new mongoose.Schema({
 // doctorSchema.index({ price: 1 });
 
 // Virtual property
-doctorSchema.virtual("experienceLevel").get(function () {
+doctorSchema.virtual("experienceLevel").get(function() {
   if (this.yearsOfExperience < 3) return "Junior";
   if (this.yearsOfExperience < 10) return "Mid-level";
   return "Senior";
@@ -129,14 +129,37 @@ doctorSchema.virtual("experienceLevel").get(function () {
 // });
 
 // Query middleware: runs before any find query
-doctorSchema.pre(/^find/, function () {
+doctorSchema.pre(/^find/, function() {
   this.find({ isActive: { $ne: false } });
 });
 
 // Aggregation middleware
-doctorSchema.pre("aggregate", function (next) {
+doctorSchema.pre("aggregate", function(next) {
   this.pipeline().unshift({ $match: { isActive: { $ne: false } } });
   next();
 });
 
+// ... (بعد الـ Virtuals والـ find middleware)
+
+// Middleware للحذف المتتالي (Cascade Delete)
+// عند حذف طبيب، يتم حذف حساب المستخدم (User) المرتبط به تلقائيًا
+doctorSchema.pre("findOneAndDelete", async function(next) {
+  try {
+    // 1. جلب بيانات الدكتور قبل الحذف للوصول لمعرف المستخدم (user ID)
+    const doctor = await this.model.findOne(this.getFilter());
+
+    if (doctor && doctor.user) {
+      // 2. حذف الوثيقة من مجموعة الـ Users
+      // نستخدم mongoose.model لتجنب مشاكل الاستيراد الدائري (Circular Dependency)
+      await mongoose.model("User").deleteOne({ _id: doctor.user });
+      console.log(
+        `Successfully deleted User associated with Doctor: ${doctor._id}`,
+      );
+    }
+  } catch (err) {
+    console.error("Error during cascade delete of User:", err);
+  }
+});
+
+module.exports = mongoose.model("Doctor", doctorSchema);
 module.exports = mongoose.model("Doctor", doctorSchema);

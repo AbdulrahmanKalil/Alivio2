@@ -3,13 +3,13 @@ const express = require("express");
 
 const authController = require("../controllers/authController");
 const patientController = require("../controllers/patientController");
-const { updatePatientSchema } = require("../utils/validators/patientSchema");
+const { updatePatientSchema } = require("../utils/validators/patientValidator");
 const validate = require("../middlewares/validationMiddleware");
-const { patientIdSchema } = require("../utils/validators/patientSchema");
+const { patientIdSchema } = require("../utils/validators/patientValidator");
 
 const router = express.Router();
 
-router.route("/").get(authController.protect, patientController.getAllPatient);
+router.route("/").get(authController.protect, patientController.getAllPatients);
 
 router.get(
   "/me",
@@ -30,12 +30,12 @@ router
     authController.protect,
     authController.restrictTo("patient"),
     patientController.updatePatient,
-  )
-  .delete(
-    validate(patientIdSchema),
-    authController.protect,
-    authController.restrictTo("doctor"),
-    patientController.deletePatient,
   );
+// .delete(
+//   validate(patientIdSchema),
+//   authController.protect,
+//   authController.restrictTo("doctor"),
+//   patientController.deletePatient,
+// );
 
 module.exports = router;

@@ -3,10 +3,10 @@ const userController = require("../controllers/userController");
 const authController = require("../controllers/authController");
 
 const validate = require("../middlewares/validationMiddleware");
-const { signupDoctorSchema } = require("../utils/validators/userSchema");
-const { signupPatientSchema } = require("../utils/validators/userSchema");
+const { signupDoctorSchema } = require("../utils/validators/userValidator");
+const { signupPatientSchema } = require("../utils/validators/userValidator");
 
-const { updateUserSchema } = require("../utils/validators/userSchema");
+const { updateUserSchema } = require("../utils/validators/userValidator");
 
 const router = express.Router();
 

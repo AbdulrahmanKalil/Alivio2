@@ -87,7 +87,6 @@ exports.getAllDoctors = factory.getAll(Doctor);
 exports.getDoctor = factory.getOne(Doctor);
 exports.createDoctor = factory.createOne(Doctor);
 exports.updateDoctor = factory.updateOne(Doctor);
-exports.deleteDoctor = factory.deleteOne(Doctor);
 
 // exports.getDoctorSchedule = catchAsync(async (req, res, next) => {
 //   const doctor = await Doctor.findById(req.params.id).select("schedule");

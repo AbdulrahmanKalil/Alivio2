@@ -3,9 +3,9 @@ const doctorController = require("../controllers/doctorController");
 const authController = require("../controllers/authController");
 const appointmentRouter = require("./appointmentRoutes");
 const validate = require("../middlewares/validationMiddleware");
-const { updateDoctorSchema } = require("../utils/validators/doctorSchema");
+const { updateDoctorSchema } = require("../utils/validators/doctorValidator");
 
-const { doctorIdSchema } = require("../utils/validators/doctorSchema");
+const { doctorIdSchema } = require("../utils/validators/doctorValidator");
 
 const router = express.Router();
 // All doctors
@@ -34,12 +34,12 @@ router
     authController.protect,
     authController.restrictTo("doctor"),
     doctorController.updateDoctor,
-  )
-  .delete(
-    validate(doctorIdSchema),
-    authController.protect,
-    doctorController.deleteDoctor,
   );
+// .delete(
+//   validate(doctorIdSchema),
+//   authController.protect,
+//   doctorController.deleteDoctor,
+// );
 
 // router.get(
 //   "/:id/schedule",

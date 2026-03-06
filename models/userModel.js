@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["patient", "doctor", "receptionist"],
+    enum: ["patient", "doctor", "admin"],
     default: "patient",
   },
   passwordChangedAt: Date,
@@ -51,21 +51,12 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 });
-userSchema.pre("save", async function(next) {
-  if (!this.isModified("password")) return next();
-
-  this.password = await bcrypt.hash(this.password, 12);
-  this.passwordConfirm = undefined;
-
-  next();
-});
 
 // ✅ Middleware 1: Hash password
 userSchema.pre("save", async function(next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
-  next();
 });
 
 // ✅ Middleware 2: Update passwordChangedAt
@@ -107,23 +98,18 @@ userSchema.methods.createPasswordResetToken = function() {
 
   return resetToken;
 };
+// يعمل عند استدعاء user.deleteOne()
+userSchema.pre("deleteOne", { document: true, query: false }, async function(
+  next,
+) {
+  const userId = this._id;
+  const role = this.role;
 
-// يحذف الـ Patient أو Doctor المرتبط بيه تلقائيًا
-userSchema.pre("findOneAndDelete", async function(next) {
-  const user = await this.model.findOne(this.getFilter());
-
-  if (!user) return next();
-
-  if (user.role === "patient") {
-    await Patient.deleteOne({ user: user._id });
+  if (role === "patient") {
+    await mongoose.model("Patient").deleteOne({ user: userId });
+  } else if (role === "doctor") {
+    await mongoose.model("Doctor").deleteOne({ user: userId });
   }
-
-  if (user.role === "doctor") {
-    await Doctor.deleteOne({ user: user._id });
-  }
-
-  next();
 });
-
 const User = mongoose.model("User", userSchema);
 module.exports = User;

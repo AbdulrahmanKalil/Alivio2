@@ -14,11 +14,6 @@ const patientSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  doctor: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Doctor",
-    default: null,
-  },
   phone: {
     type: String,
     required: true,
@@ -47,6 +42,33 @@ const patientSchema = new mongoose.Schema({
     trim: true,
     default: "None",
   },
+});
+// patientModel.js
+
+// Middleware للحذف المتتالي (Cascade Delete)
+patientSchema.pre("findOneAndDelete", async function() {
+  try {
+    // 1. جلب بيانات المريض قبل الحذف
+    const patient = await this.model.findOne(this.getFilter());
+
+    // 🔐 Authorization check
+    if (patient.doctor.toString() !== req.user._id.toString()) {
+      return next(new AppError("Not your patient", 403));
+    }
+
+    // 2. التأكد من وجود المريض ووجود user مرتبط به
+    if (patient && patient.user) {
+      // حذف الـ User المرتبط بهذا المريض
+      await mongoose.model("User").deleteOne({ _id: patient.user });
+
+      console.log(
+        `Successfully deleted User associated with Patient ID: ${patient._id}`,
+      );
+    }
+  } catch (err) {
+    console.error("Error during cascade delete of User from Patient:", err);
+    throw err;
+  }
 });
 
 const Patient = mongoose.model("Patient", patientSchema);

@@ -1,0 +1,143 @@
+[
+  {
+    "name": "Mohamed Salah",
+    "email": "mohamed.salah@patient.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "patient"
+  },
+  {
+    "name": "Ali Mahmoud",
+    "email": "ali.mahmoud@patient.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "patient"
+  },
+  {
+    "name": "Omar Khaled",
+    "email": "omar.khaled@patient.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "patient"
+  },
+  {
+    "name": "Youssef Ahmed",
+    "email": "youssef.ahmed@patient.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "patient"
+  },
+  {
+    "name": "Mahmoud Nasser",
+    "email": "mahmoud.nasser@patient.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "patient"
+  },
+  {
+    "name": "Karim Mostafa",
+    "email": "karim.mostafa@patient.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "patient"
+  },
+  {
+    "name": "Hassan Adel",
+    "email": "hassan.adel@patient.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "patient"
+  },
+  {
+    "name": "Ahmed Samir",
+    "email": "ahmed.samir@patient.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "patient"
+  },
+  {
+    "name": "Tarek Ibrahim",
+    "email": "tarek.ibrahim@patient.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "patient"
+  },
+  {
+    "name": "Mostafa Ali",
+    "email": "mostafa.ali@patient.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "patient"
+  },
+
+  {
+    "name": "Dr Ahmed Hassan",
+    "email": "ahmed1@clinic.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "doctor"
+  },
+  {
+    "name": "Dr Sara Ali",
+    "email": "sara2@clinic.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "doctor"
+  },
+  {
+    "name": "Dr Mohamed Khaled",
+    "email": "mohamed3@clinic.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "doctor"
+  },
+  {
+    "name": "Dr Youssef Adel",
+    "email": "youssef4@clinic.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "doctor"
+  },
+  {
+    "name": "Dr Mariam Nabil",
+    "email": "mariam5@clinic.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "doctor"
+  },
+  {
+    "name": "Dr Omar Tarek",
+    "email": "omar6@clinic.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "doctor"
+  },
+  {
+    "name": "Dr Dina Mostafa",
+    "email": "dina7@clinic.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "doctor"
+  },
+  {
+    "name": "Dr Khaled Fathy",
+    "email": "khaled8@clinic.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "doctor"
+  },
+  {
+    "name": "Dr Rana Samir",
+    "email": "rana9@clinic.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "doctor"
+  },
+  {
+    "name": "Dr Mahmoud Said",
+    "email": "mahmoud10@clinic.com",
+    "password": "12345678",
+    "passwordConfirm": "12345678",
+    "role": "doctor"
+  }
+]

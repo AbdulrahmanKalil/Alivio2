@@ -1,7 +1,8 @@
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const runAdminSeed = require("./utils/adminSeeder");
 
-require("dotenv").config({ path: "./config.env", quiet: true });
+dotenv.config({ path: "./config.env", quiet: true });
 
 const app = require("./app");
 
@@ -9,16 +10,19 @@ mongoose
   .connect(
     process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD),
   )
-  // eslint-disable-next-line no-console
-  .then(() => console.log("DB connection successful!"))
+  .then(async () => {
+    console.log("DB connection successful!");
+
+    // ✅ Bootstrap Admin
+    await runAdminSeed();
+  })
   .catch((err) => {
-    // eslint-disable-next-line no-console
     console.error("DB connection failed");
+    console.error(err);
     process.exit(1);
   });
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
-  // eslint-disable-next-line no-console
   console.log(`App running on port ${port}...`);
 });

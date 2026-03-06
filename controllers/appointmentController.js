@@ -6,84 +6,121 @@ const Doctor = require("../models/doctorModel");
 const Patient = require("../models/patientModel");
 const { mapAppointments } = require("../utils/appointmentMapper");
 
-// exports.getAllappointment = catchAsync(async (_req, res) => {
-//     const features = new features(Appointment.find(), _req.query)
-//     .search()
-//     .filter()
-//     .sort()
-//     .limitFields()
-//     .paginate();
-
-//   const appointment = await features.query;
-
-//   res.status(200).json({
-//     status: "succsess",
-//     data: {
-//       appointment,
-//     },
-//   });
-// });
-
 exports.setDoctorId = (req, res, next) => {
-  req.body.doctor = req.params.doctorId;
+  if (!req.body.doctor && req.params.doctorId) {
+    req.body.doctor = req.params.doctorId;
+  }
   next();
 };
 
 exports.bookAppointment = catchAsync(async (req, res, next) => {
-  const { doctor: doctorId, date } = req.body;
+  const { doctor: doctorId, startTime, patient: bodyPatientId } = req.body;
+
+  if (!doctorId || !startTime) {
+    return next(new AppError("Doctor ID and startTime are required", 400));
+  }
+
+  let patientId;
+
+  switch (req.user.role) {
+    case "patient":
+      patientId = req.user.patientId;
+      break;
+
+    case "admin":
+      if (!bodyPatientId) {
+        return next(new AppError("Patient ID is required for admins", 400));
+      }
+      patientId = bodyPatientId;
+      break;
+
+    default:
+      return next(new AppError("Unauthorized role", 403));
+  }
+
+  /** التأكد أن المريض موجود */
+
+  const patient = await Patient.findById(patientId);
+  if (!patient) {
+    return next(new AppError("Patient not found", 404));
+  }
+
+  /** التأكد أن الطبيب موجود */
 
   const doctor = await Doctor.findById(doctorId);
   if (!doctor) {
     return next(new AppError("Doctor not found", 404));
   }
 
-  const appointmentDate = new Date(date);
-  if (appointmentDate < Date.now()) {
-    return next(new AppError("Invalid appointment date", 400));
+  /** تحويل الوقت */
+
+  const start = new Date(startTime);
+
+  /** مدة الموعد */
+
+  const APPOINTMENT_DURATION = 15;
+
+  const end = new Date(start.getTime() + APPOINTMENT_DURATION * 60000);
+
+  /** منع الحجز في الماضي */
+
+  if (start <= new Date()) {
+    return next(new AppError("Cannot book an appointment in the past", 400));
   }
+
+  /** منع تضارب المواعيد */
 
   const conflict = await Appointment.findOne({
     doctor: doctorId,
-    date: appointmentDate,
     status: { $ne: "cancelled" },
+    startTime: { $lt: end },
+    endTime: { $gt: start },
   });
 
   if (conflict) {
     return next(new AppError("Time slot already booked", 400));
   }
 
+  /** إنشاء الموعد */
+
   const appointment = await Appointment.create({
-    patient: req.user.patientId,
+    patient: patientId,
     doctor: doctorId,
-    date: appointmentDate,
+    startTime: start,
+    endTime: end,
     status: "pending",
+    bookedBy: req.user._id,
   });
+
+  const cleanAppointments = mapAppointments([appointment]);
 
   res.status(201).json({
     status: "success",
-    data: { appointment },
+    results: cleanAppointments.length,
+    data: {
+      appointments: cleanAppointments,
+    },
   });
 });
 
-// exports.getMyAppointments = catchAsync(async (req, res) => {
-//   const filter = {};
+exports.getAllAppointments = async (req, res, next) => {
+  const features = new APIFeatures(Appointment.find(), req.query)
+    .search()
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
 
-//   if (req.user.role === "doctor") {
-//     filter.doctor = req.user.doctorId;
-//   }
+  const appointments = await features.query
+    .populate("doctor", "displayName ")
+    .populate("patient", "displayName ");
 
-//   if (req.user.role === "patient") {
-//     filter.patient = req.user.patientId;
-//   }
+  res.status(200).json({
+    results: appointments.length,
+    data: appointments,
+  });
+};
 
-//   const appointments = await Appointment.find(filter);
-
-//   res.status(200).json({
-//     status: "success",
-//     results: appointments.length,
-//     data: { appointments },
-//   });
-// });
 exports.getMyAppointments = catchAsync(async (req, res) => {
   let filter = {};
 

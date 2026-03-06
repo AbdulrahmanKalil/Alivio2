@@ -1,0 +1,72 @@
+[
+  {
+    "displayName": "Mohamed Salah",
+    "phone": "01012345001",
+    "address": "Nasr City, Cairo",
+    "bloodType": "O+",
+    "medicalHistory": "None"
+  },
+  {
+    "displayName": "Ali Mahmoud",
+    "phone": "01112345002",
+    "address": "Maadi, Cairo",
+    "bloodType": "A+",
+    "medicalHistory": "Diabetes"
+  },
+  {
+    "displayName": "Omar Khaled",
+    "phone": "01212345003",
+    "address": "Dokki, Giza",
+    "bloodType": "B+",
+    "medicalHistory": "High blood pressure"
+  },
+  {
+    "displayName": "Youssef Ahmed",
+    "phone": "01012345004",
+    "address": "Haram, Giza",
+    "bloodType": "AB+",
+    "medicalHistory": "None"
+  },
+  {
+    "displayName": "Mahmoud Nasser",
+    "phone": "01112345005",
+    "address": "Shobra, Cairo",
+    "bloodType": "O-",
+    "medicalHistory": "Asthma"
+  },
+  {
+    "displayName": "Karim Mostafa",
+    "phone": "01212345006",
+    "address": "6th October, Giza",
+    "bloodType": "A-",
+    "medicalHistory": "None"
+  },
+  {
+    "displayName": "Hassan Adel",
+    "phone": "01012345007",
+    "address": "Faisal, Giza",
+    "bloodType": "B-",
+    "medicalHistory": "Heart condition"
+  },
+  {
+    "displayName": "Ahmed Samir",
+    "phone": "01112345008",
+    "address": "Heliopolis, Cairo",
+    "bloodType": "AB-",
+    "medicalHistory": "None"
+  },
+  {
+    "displayName": "Tarek Ibrahim",
+    "phone": "01212345009",
+    "address": "New Cairo",
+    "bloodType": "O+",
+    "medicalHistory": "Allergy to penicillin"
+  },
+  {
+    "displayName": "Mostafa Ali",
+    "phone": "01012345010",
+    "address": "Zamalek, Cairo",
+    "bloodType": "A+",
+    "medicalHistory": "None"
+  }
+]

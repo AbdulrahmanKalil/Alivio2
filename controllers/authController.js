@@ -140,6 +140,7 @@ const signupDoctor = catchAsync(async (req, res, next) => {
     throw err; // catchAsync will handle it
   }
 });
+
 const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 

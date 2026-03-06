@@ -1,11 +1,104 @@
 [
   {
-    "_id": "5c8a1d5b0190b214360dc057",
-    "name": "Jonas Schmedtmann",
-    "email": "admin@natours.io",
-    "role": "admin",
-    "active": true,
-    "photo": "user-1.jpg",
-    "password": "$2a$12$Q0grHjH9PXc6SxivC8m12.2mZJ9BbKcgFpwSG4Y1ZEII8HJVzWeyS"
+    "displayName": "Dr Ahmed Hassan",
+    "phone": "01012345678",
+    "specialty": "cardiology",
+    "yearsOfExperience": 12,
+    "price": 350,
+    "schedule": ["sunday", "tuesday", "thursday"],
+    "workingHours": { "start": "10:00", "end": "16:00" },
+    "gender": "male",
+    "description": "Senior cardiologist with more than 10 years experience."
+  },
+  {
+    "displayName": "Dr Sara Ali",
+    "phone": "01112345678",
+    "specialty": "dermatology",
+    "yearsOfExperience": 8,
+    "price": 300,
+    "schedule": ["monday", "wednesday", "friday"],
+    "workingHours": { "start": "11:00", "end": "17:00" },
+    "gender": "female",
+    "description": "Dermatology specialist focusing on skin treatments."
+  },
+  {
+    "displayName": "Dr Mohamed Khaled",
+    "phone": "01212345678",
+    "specialty": "orthopedics",
+    "yearsOfExperience": 15,
+    "price": 400,
+    "schedule": ["saturday", "monday", "wednesday"],
+    "workingHours": { "start": "09:00", "end": "15:00" },
+    "gender": "male"
+  },
+  {
+    "displayName": "Dr Youssef Adel",
+    "phone": "01098765432",
+    "specialty": "neurology",
+    "yearsOfExperience": 9,
+    "price": 380,
+    "schedule": ["sunday", "tuesday"],
+    "workingHours": { "start": "12:00", "end": "18:00" },
+    "gender": "male"
+  },
+  {
+    "displayName": "Dr Mariam Nabil",
+    "phone": "01198765432",
+    "specialty": "pediatrics",
+    "yearsOfExperience": 7,
+    "price": 250,
+    "schedule": ["saturday", "tuesday", "thursday"],
+    "workingHours": { "start": "10:00", "end": "15:00" },
+    "gender": "female"
+  },
+  {
+    "displayName": "Dr Omar Tarek",
+    "phone": "01298765432",
+    "specialty": "general",
+    "yearsOfExperience": 10,
+    "price": 200,
+    "schedule": ["monday", "wednesday"],
+    "workingHours": { "start": "09:30", "end": "14:30" },
+    "gender": "male"
+  },
+  {
+    "displayName": "Dr Dina Mostafa",
+    "phone": "01022223333",
+    "specialty": "psychiatry",
+    "yearsOfExperience": 11,
+    "price": 320,
+    "schedule": ["sunday", "thursday"],
+    "workingHours": { "start": "13:00", "end": "19:00" },
+    "gender": "female"
+  },
+  {
+    "displayName": "Dr Khaled Fathy",
+    "phone": "01122223333",
+    "specialty": "dentistry",
+    "yearsOfExperience": 14,
+    "price": 280,
+    "schedule": ["monday", "tuesday", "wednesday"],
+    "workingHours": { "start": "10:00", "end": "16:00" },
+    "gender": "male"
+  },
+  {
+    "displayName": "Dr Rana Samir",
+    "phone": "01222223333",
+    "specialty": "dermatology",
+    "yearsOfExperience": 6,
+    "price": 270,
+    "schedule": ["tuesday", "thursday"],
+    "workingHours": { "start": "11:00", "end": "17:00" },
+    "gender": "female"
+  },
+  {
+    "displayName": "Dr Mahmoud Said",
+    "phone": "01044445555",
+    "specialty": "cardiology",
+    "yearsOfExperience": 18,
+    "price": 450,
+    "schedule": ["saturday", "monday", "thursday"],
+    "workingHours": { "start": "09:00", "end": "14:00" },
+    "gender": "male"
   }
 ]
