@@ -112,9 +112,11 @@ exports.getAllAppointments = async (req, res, next) => {
     .paginate();
 
   const appointments = await features.query
+    .select("doctor patient startTime  status")
     .populate("doctor", "displayName ")
     .populate("patient", "displayName ");
 
+  console.log(appointments);
   res.status(200).json({
     results: appointments.length,
     data: appointments,

@@ -162,4 +162,3 @@ doctorSchema.pre("findOneAndDelete", async function(next) {
 });
 
 module.exports = mongoose.model("Doctor", doctorSchema);
-module.exports = mongoose.model("Doctor", doctorSchema);

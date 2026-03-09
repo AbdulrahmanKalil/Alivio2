@@ -9,7 +9,13 @@ const { doctorIdSchema } = require("../utils/validators/doctorValidator");
 
 const router = express.Router();
 // All doctors
-router.route("/").get(authController.protect, doctorController.getAllDoctors);
+router
+  .route("/")
+  .get(
+    authController.protect,
+    authController.restrictTo("admin", "patient"),
+    doctorController.getAllDoctors,
+  );
 
 router.get(
   "/me",
@@ -26,7 +32,7 @@ router
   .get(
     validate(doctorIdSchema),
     authController.protect,
-    authController.restrictTo("doctor", "patient"),
+    authController.restrictTo("doctor", "patient", "admin"),
     doctorController.getDoctor,
   )
   .patch(
