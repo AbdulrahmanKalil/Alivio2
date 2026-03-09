@@ -7,6 +7,8 @@
     "price": 350,
     "schedule": ["sunday", "tuesday", "thursday"],
     "workingHours": { "start": "10:00", "end": "16:00" },
+    "dateOfBirth": "1984-03-12",
+    "address": { "street": "Nasr City", "city": "Cairo", "country": "Egypt" },
     "gender": "male",
     "description": "Senior cardiologist with more than 10 years experience."
   },
@@ -18,6 +20,8 @@
     "price": 300,
     "schedule": ["monday", "wednesday", "friday"],
     "workingHours": { "start": "11:00", "end": "17:00" },
+    "dateOfBirth": "1990-06-22",
+    "address": { "street": "Maadi", "city": "Cairo", "country": "Egypt" },
     "gender": "female",
     "description": "Dermatology specialist focusing on skin treatments."
   },
@@ -29,7 +33,10 @@
     "price": 400,
     "schedule": ["saturday", "monday", "wednesday"],
     "workingHours": { "start": "09:00", "end": "15:00" },
-    "gender": "male"
+    "dateOfBirth": "1982-11-09",
+    "address": { "street": "Dokki", "city": "Giza", "country": "Egypt" },
+    "gender": "male",
+    "description": "Orthopedic consultant specializing in bone and joint surgery."
   },
   {
     "displayName": "Dr Youssef Adel",
@@ -39,7 +46,10 @@
     "price": 380,
     "schedule": ["sunday", "tuesday"],
     "workingHours": { "start": "12:00", "end": "18:00" },
-    "gender": "male"
+    "dateOfBirth": "1989-02-15",
+    "address": { "street": "Heliopolis", "city": "Cairo", "country": "Egypt" },
+    "gender": "male",
+    "description": "Neurologist treating neurological disorders."
   },
   {
     "displayName": "Dr Mariam Nabil",
@@ -49,7 +59,10 @@
     "price": 250,
     "schedule": ["saturday", "tuesday", "thursday"],
     "workingHours": { "start": "10:00", "end": "15:00" },
-    "gender": "female"
+    "dateOfBirth": "1992-09-30",
+    "address": { "street": "New Cairo", "city": "Cairo", "country": "Egypt" },
+    "gender": "female",
+    "description": "Pediatrician with strong experience in child healthcare."
   },
   {
     "displayName": "Dr Omar Tarek",
@@ -59,7 +72,10 @@
     "price": 200,
     "schedule": ["monday", "wednesday"],
     "workingHours": { "start": "09:30", "end": "14:30" },
-    "gender": "male"
+    "dateOfBirth": "1988-04-18",
+    "address": { "street": "Faisal", "city": "Giza", "country": "Egypt" },
+    "gender": "male",
+    "description": "General practitioner providing primary healthcare."
   },
   {
     "displayName": "Dr Dina Mostafa",
@@ -69,7 +85,10 @@
     "price": 320,
     "schedule": ["sunday", "thursday"],
     "workingHours": { "start": "13:00", "end": "19:00" },
-    "gender": "female"
+    "dateOfBirth": "1986-01-07",
+    "address": { "street": "Zamalek", "city": "Cairo", "country": "Egypt" },
+    "gender": "female",
+    "description": "Psychiatrist specialized in anxiety and depression treatment."
   },
   {
     "displayName": "Dr Khaled Fathy",
@@ -79,7 +98,10 @@
     "price": 280,
     "schedule": ["monday", "tuesday", "wednesday"],
     "workingHours": { "start": "10:00", "end": "16:00" },
-    "gender": "male"
+    "dateOfBirth": "1983-07-19",
+    "address": { "street": "Shobra", "city": "Cairo", "country": "Egypt" },
+    "gender": "male",
+    "description": "Dentist focusing on cosmetic and restorative dentistry."
   },
   {
     "displayName": "Dr Rana Samir",
@@ -89,7 +111,10 @@
     "price": 270,
     "schedule": ["tuesday", "thursday"],
     "workingHours": { "start": "11:00", "end": "17:00" },
-    "gender": "female"
+    "dateOfBirth": "1994-12-11",
+    "address": { "street": "6th October", "city": "Giza", "country": "Egypt" },
+    "gender": "female",
+    "description": "Dermatologist specializing in skin care and cosmetic treatments."
   },
   {
     "displayName": "Dr Mahmoud Said",
@@ -99,6 +124,9 @@
     "price": 450,
     "schedule": ["saturday", "monday", "thursday"],
     "workingHours": { "start": "09:00", "end": "14:00" },
-    "gender": "male"
+    "dateOfBirth": "1979-05-25",
+    "address": { "street": "Mohandessin", "city": "Giza", "country": "Egypt" },
+    "gender": "male",
+    "description": "Highly experienced cardiology consultant."
   }
 ]

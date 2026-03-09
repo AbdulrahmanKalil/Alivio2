@@ -32,20 +32,18 @@ const appointmentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    location: {
+      clinicName: {
+        type: String,
+        trim: true,
+      },
+    },
   },
   {
     timestamps: true,
   },
 );
 
-// exports.setDoctorId = (req, res, next) => {
-//   req.body.doctor = req.params.doctorId;
-//   next();
-// };
-/**
- * Index مهم جدًا
- * يمنع تكرار نفس المعاد لنفس الدكتور (تقنيًا)
- */
 
 appointmentSchema.index({ doctor: 1, startTime: 1 }, { unique: true });
 appointmentSchema.index({ patient: 1 });

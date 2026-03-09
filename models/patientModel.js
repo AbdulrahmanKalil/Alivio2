@@ -1,49 +1,77 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 
-const patientSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-    unique: true,
-  },
+const patientSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+    },
 
-  displayName: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  phone: {
-    type: String,
-    required: true,
-    validate: {
-      validator: function(val) {
-        return /^(\+20|0)?1[0125][0-9]{8}$/.test(val);
+    displayName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+      validate: {
+        validator: function(val) {
+          return /^(\+20|0)?1[0125][0-9]{8}$/.test(val);
+        },
+        message: "Please provide a valid Egyptian phone number",
       },
-      message: "Please provide a valid Egyptian phone number",
+    },
+
+    dateOfBirth: {
+      type: Date,
+      required: true,
+    },
+
+    address: {
+      street: {
+        type: String,
+        default: null,
+      },
+      city: {
+        type: String,
+        default: null,
+      },
+      country: {
+        type: String,
+        default: "Egypt",
+      },
+    },
+
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+      default: "male",
+    },
+
+    bloodType: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+    },
+
+    medicalHistory: {
+      type: String,
+      trim: true,
+      default: "None",
     },
   },
-
-  address: {
-    type: String,
-    trim: true,
+  {
+    timestamps: true,
   },
-
-  bloodType: {
-    type: String,
-    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-    default: "A+",
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   },
-
-  medicalHistory: {
-    type: String,
-    required: true,
-    trim: true,
-    default: "None",
-  },
-});
-// patientModel.js
+);
 
 // Middleware للحذف المتتالي (Cascade Delete)
 patientSchema.pre("findOneAndDelete", async function() {
@@ -69,6 +97,22 @@ patientSchema.pre("findOneAndDelete", async function() {
     console.error("Error during cascade delete of User from Patient:", err);
     throw err;
   }
+});
+patientSchema.virtual("age").get(function() {
+  if (!this.dateOfBirth) return null;
+
+  const today = new Date();
+  const birth = new Date(this.dateOfBirth);
+
+  let age = today.getFullYear() - birth.getFullYear();
+
+  const m = today.getMonth() - birth.getMonth();
+
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+
+  return age;
 });
 
 const Patient = mongoose.model("Patient", patientSchema);

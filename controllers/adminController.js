@@ -11,7 +11,6 @@ const getDashboard = catchAsync(async (req, res, next) => {
     totalAppointments,
     revenueResult,
     topDoctors,
-    appointmentStats,
   ] = await Promise.all([
     // 1️⃣ Total Doctors
     Doctor.countDocuments(),
@@ -89,9 +88,7 @@ const getAppointmentStats = catchAsync(async (req, res, next) => {
       },
     },
   ]);
-
   const statsObject = {};
-
   appointmentStats.forEach((stat) => {
     statsObject[stat._id] = stat.count;
   });

@@ -2,70 +2,120 @@
   {
     "displayName": "Mohamed Salah",
     "phone": "01012345001",
-    "address": "Nasr City, Cairo",
+    "dateOfBirth": "1998-05-12",
+    "address": {
+      "street": "Nasr City",
+      "city": "Cairo",
+      "country": "Egypt"
+    },
     "bloodType": "O+",
     "medicalHistory": "None"
   },
   {
     "displayName": "Ali Mahmoud",
     "phone": "01112345002",
-    "address": "Maadi, Cairo",
+    "dateOfBirth": "1990-11-03",
+    "address": {
+      "street": "Maadi",
+      "city": "Cairo",
+      "country": "Egypt"
+    },
     "bloodType": "A+",
     "medicalHistory": "Diabetes"
   },
   {
     "displayName": "Omar Khaled",
     "phone": "01212345003",
-    "address": "Dokki, Giza",
+    "dateOfBirth": "1988-07-21",
+    "address": {
+      "street": "Dokki",
+      "city": "Giza",
+      "country": "Egypt"
+    },
     "bloodType": "B+",
     "medicalHistory": "High blood pressure"
   },
   {
     "displayName": "Youssef Ahmed",
     "phone": "01012345004",
-    "address": "Haram, Giza",
+    "dateOfBirth": "1995-02-18",
+    "address": {
+      "street": "Haram",
+      "city": "Giza",
+      "country": "Egypt"
+    },
     "bloodType": "AB+",
     "medicalHistory": "None"
   },
   {
     "displayName": "Mahmoud Nasser",
     "phone": "01112345005",
-    "address": "Shobra, Cairo",
+    "dateOfBirth": "1987-09-09",
+    "address": {
+      "street": "Shobra",
+      "city": "Cairo",
+      "country": "Egypt"
+    },
     "bloodType": "O-",
     "medicalHistory": "Asthma"
   },
   {
     "displayName": "Karim Mostafa",
     "phone": "01212345006",
-    "address": "6th October, Giza",
+    "dateOfBirth": "1999-01-25",
+    "address": {
+      "street": "6th October",
+      "city": "Giza",
+      "country": "Egypt"
+    },
     "bloodType": "A-",
     "medicalHistory": "None"
   },
   {
     "displayName": "Hassan Adel",
     "phone": "01012345007",
-    "address": "Faisal, Giza",
+    "dateOfBirth": "1985-06-14",
+    "address": {
+      "street": "Faisal",
+      "city": "Giza",
+      "country": "Egypt"
+    },
     "bloodType": "B-",
     "medicalHistory": "Heart condition"
   },
   {
     "displayName": "Ahmed Samir",
     "phone": "01112345008",
-    "address": "Heliopolis, Cairo",
+    "dateOfBirth": "1993-12-30",
+    "address": {
+      "street": "Heliopolis",
+      "city": "Cairo",
+      "country": "Egypt"
+    },
     "bloodType": "AB-",
     "medicalHistory": "None"
   },
   {
     "displayName": "Tarek Ibrahim",
     "phone": "01212345009",
-    "address": "New Cairo",
+    "dateOfBirth": "1991-03-17",
+    "address": {
+      "street": "New Cairo",
+      "city": "Cairo",
+      "country": "Egypt"
+    },
     "bloodType": "O+",
     "medicalHistory": "Allergy to penicillin"
   },
   {
     "displayName": "Mostafa Ali",
     "phone": "01012345010",
-    "address": "Zamalek, Cairo",
+    "dateOfBirth": "1997-08-05",
+    "address": {
+      "street": "Zamalek",
+      "city": "Cairo",
+      "country": "Egypt"
+    },
     "bloodType": "A+",
     "medicalHistory": "None"
   }

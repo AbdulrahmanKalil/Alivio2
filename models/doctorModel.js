@@ -85,6 +85,27 @@ const doctorSchema = new mongoose.Schema({
     },
     required: [true, "Please specify working hours"],
   },
+
+  dateOfBirth: {
+    type: Date,
+    required: true,
+  },
+
+  address: {
+    street: {
+      type: String,
+      default: null,
+    },
+    city: {
+      type: String,
+      default: null,
+    },
+    country: {
+      type: String,
+      default: "Egypt",
+    },
+  },
+
   gender: {
     type: String,
     enum: {
@@ -109,24 +130,12 @@ const doctorSchema = new mongoose.Schema({
   },
 });
 
-// // Indexes for better performance
-// doctorSchema.index({ specialty: 1, ratingsAverage: -1 });
-// doctorSchema.index({ slug: 1 });
-// doctorSchema.index({ email: 1 });
-// doctorSchema.index({ hospital: 1 });
-// doctorSchema.index({ price: 1 });
-
 // Virtual property
 doctorSchema.virtual("experienceLevel").get(function() {
   if (this.yearsOfExperience < 3) return "Junior";
   if (this.yearsOfExperience < 10) return "Mid-level";
   return "Senior";
 });
-
-// // Document middleware: runs before .save() and .create()
-// doctorSchema.pre("save", function (next) {
-//   this.slug = slugify(this.name, { lower: true });
-// });
 
 // Query middleware: runs before any find query
 doctorSchema.pre(/^find/, function() {
@@ -139,8 +148,6 @@ doctorSchema.pre("aggregate", function(next) {
   next();
 });
 
-// ... (بعد الـ Virtuals والـ find middleware)
-
 // Middleware للحذف المتتالي (Cascade Delete)
 // عند حذف طبيب، يتم حذف حساب المستخدم (User) المرتبط به تلقائيًا
 doctorSchema.pre("findOneAndDelete", async function(next) {
@@ -151,6 +158,7 @@ doctorSchema.pre("findOneAndDelete", async function(next) {
     if (doctor && doctor.user) {
       // 2. حذف الوثيقة من مجموعة الـ Users
       // نستخدم mongoose.model لتجنب مشاكل الاستيراد الدائري (Circular Dependency)
+
       await mongoose.model("User").deleteOne({ _id: doctor.user });
       console.log(
         `Successfully deleted User associated with Doctor: ${doctor._id}`,
