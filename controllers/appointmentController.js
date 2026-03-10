@@ -14,92 +14,43 @@ exports.setDoctorId = (req, res, next) => {
 };
 
 exports.bookAppointment = catchAsync(async (req, res, next) => {
-  const { doctor: doctorId, startTime, patient: bodyPatientId } = req.body;
-
-  if (!doctorId || !startTime) {
-    return next(new AppError("Doctor ID and startTime are required", 400));
-  }
-
-  let patientId;
-
-  switch (req.user.role) {
-    case "patient":
-      patientId = req.user.patientId;
-      break;
-
-    case "admin":
-      if (!bodyPatientId) {
-        return next(new AppError("Patient ID is required for admins", 400));
-      }
-      patientId = bodyPatientId;
-      break;
-
-    default:
-      return next(new AppError("Unauthorized role", 403));
-  }
-
-  /** التأكد أن المريض موجود */
-
-  const patient = await Patient.findById(patientId);
-  if (!patient) {
-    return next(new AppError("Patient not found", 404));
-  }
-
-  /** التأكد أن الطبيب موجود */
+  const patientId = req.user.patientId;
+  const doctorId = req.params.doctorId;
 
   const doctor = await Doctor.findById(doctorId);
+
   if (!doctor) {
     return next(new AppError("Doctor not found", 404));
   }
 
-  /** تحويل الوقت */
+  const start = new Date(req.body.startTime);
 
-  const start = new Date(startTime);
+  const duration = 15;
 
-  /** مدة الموعد */
-
-  const APPOINTMENT_DURATION = 15;
-
-  const end = new Date(start.getTime() + APPOINTMENT_DURATION * 60000);
-
-  /** منع الحجز في الماضي */
-
-  if (start <= new Date()) {
-    return next(new AppError("Cannot book an appointment in the past", 400));
-  }
-
-  /** منع تضارب المواعيد */
+  const end = new Date(start.getTime() + duration * 60000);
 
   const conflict = await Appointment.findOne({
     doctor: doctorId,
-    status: { $ne: "cancelled" },
     startTime: { $lt: end },
     endTime: { $gt: start },
   });
 
   if (conflict) {
-    return next(new AppError("Time slot already booked", 400));
+    return next(new AppError("This time slot is already booked", 400));
   }
-
-  /** إنشاء الموعد */
 
   const appointment = await Appointment.create({
     patient: patientId,
     doctor: doctorId,
     startTime: start,
     endTime: end,
-    status: "pending",
     bookedBy: req.user._id,
+    price: doctor.price,
   });
-
-  const cleanAppointments = mapAppointments([appointment]);
 
   res.status(201).json({
     status: "success",
-    results: cleanAppointments.length,
-    data: {
-      appointments: cleanAppointments,
-    },
+    data: { appointment },
   });
 });
 
@@ -116,7 +67,6 @@ exports.getAllAppointments = async (req, res, next) => {
     .populate("doctor", "displayName ")
     .populate("patient", "displayName ");
 
-  console.log(appointments);
   res.status(200).json({
     results: appointments.length,
     data: appointments,
@@ -135,7 +85,6 @@ exports.getMyAppointments = catchAsync(async (req, res) => {
   }
 
   const features = new APIFeatures(Appointment.find(filter), req.query)
-    .search()
     .filter()
     .sort()
     .limitFields()
@@ -148,16 +97,15 @@ exports.getMyAppointments = catchAsync(async (req, res) => {
     })
     .populate({
       path: "patient",
-      select: "displayName email", //
+      select: "displayName email",
     });
+
   const cleanAppointments = mapAppointments(appointments);
 
   res.status(200).json({
     status: "success",
     results: cleanAppointments.length,
-    data: {
-      appointments: cleanAppointments,
-    },
+    data: { appointments: cleanAppointments },
   });
 });
 
@@ -208,7 +156,7 @@ exports.cancelAppointmentByDoctor = catchAsync(async (req, res, next) => {
   if (!appointment) {
     return next(new AppError("Appointment not found or not authorized", 404));
   }
-  const appointmentTime = new Date(appointment.date);
+  const appointmentTime = new Date(appointment.startTime);
   const now = new Date();
 
   if (status === "cancelled") {
@@ -290,7 +238,6 @@ exports.cancelAppointmentByDoctor = catchAsync(async (req, res, next) => {
 });
 
 exports.cancelAppointmentByPatient = catchAsync(async (req, res, next) => {
-  // 1️⃣ هات الموعد وتأكد إنه بتاع المريض
   const appointment = await Appointment.findOne({
     _id: req.params.id,
     patient: req.user.patientId,
@@ -303,17 +250,17 @@ exports.cancelAppointmentByPatient = catchAsync(async (req, res, next) => {
       path: "patient",
       select: "displayName email",
     });
+
   if (!appointment) {
     return next(new AppError("Appointment not found or not authorized", 404));
   }
 
-  const appointmentTime = new Date(appointment.date);
+  const appointmentTime = new Date(appointment.startTime);
   const now = new Date();
 
   const hoursDiff =
     (appointmentTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-  // 2️⃣ مينفعش تلغي موعد متلغي أو مخلص
   if (["cancelled", "completed"].includes(appointment.status)) {
     return next(
       new AppError(
@@ -323,19 +270,6 @@ exports.cancelAppointmentByPatient = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 3️⃣ pending أو confirmed → لازم 24 ساعة
-  if (["pending", "confirmed"].includes(appointment.status)) {
-    if (hoursDiff < 24) {
-      return next(
-        new AppError(
-          "Appointments can only be cancelled at least 24 hours before the scheduled time",
-          400,
-        ),
-      );
-    }
-  }
-
-  // 4️⃣ مينفعش تلغي لو الموعد بدأ
   if (now >= appointmentTime) {
     return next(
       new AppError(
@@ -345,7 +279,15 @@ exports.cancelAppointmentByPatient = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 5️⃣ حدّث الموعد
+  if (["pending", "confirmed"].includes(appointment.status) && hoursDiff < 24) {
+    return next(
+      new AppError(
+        "Appointments must be cancelled at least 24 hours before the scheduled time",
+        400,
+      ),
+    );
+  }
+
   appointment.set({
     status: "cancelled",
     cancelledBy: req.user._id,
@@ -353,13 +295,16 @@ exports.cancelAppointmentByPatient = catchAsync(async (req, res, next) => {
     updatedBy: req.user._id,
   });
 
-  await appointment.save({ validateBeforeSave: true });
+  await appointment.save({
+    validateBeforeSave: true,
+  });
 
-  const cleanAppointments = mapAppointments(appointments);
+  const cleanAppointment = mapAppointments([appointment]);
+
   res.status(200).json({
     status: "success",
     data: {
-      appointments: cleanAppointments,
+      appointment: cleanAppointment[0],
     },
   });
 });

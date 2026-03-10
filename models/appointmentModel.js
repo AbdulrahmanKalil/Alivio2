@@ -16,10 +16,12 @@ const appointmentSchema = new mongoose.Schema(
 
     startTime: {
       type: Date,
-      required: true,
+      required: [true, "Appointment must have a start time"],
     },
+
     endTime: {
       type: Date,
+      required: [true, "Appointment must have an end time"],
     },
 
     status: {
@@ -32,22 +34,22 @@ const appointmentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+
     location: {
       clinicName: {
         type: String,
         trim: true,
       },
     },
+
+    price: Number,
   },
-  {
-    timestamps: true,
-  },
+  { timestamps: true },
 );
 
-
-appointmentSchema.index({ doctor: 1, startTime: 1 }, { unique: true });
+// indexes
+appointmentSchema.index({ doctor: 1, startTime: 1, endTime: 1 });
 appointmentSchema.index({ patient: 1 });
 appointmentSchema.index({ startTime: 1 });
-const Appointment = mongoose.model("Appointment", appointmentSchema);
 
-module.exports = Appointment;
+module.exports = mongoose.model("Appointment", appointmentSchema);

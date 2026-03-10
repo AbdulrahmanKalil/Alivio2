@@ -1,8 +1,15 @@
+const isPopulated = (ref) => ref && typeof ref === "object" && ref._id;
+
 const mapAppointment = (appointment) => ({
   id: appointment._id,
-  date: appointment.date,
+
+  startTime: appointment.startTime,
+
+  endTime: appointment.endTime,
+
   status: appointment.status,
-  doctor: appointment.doctor
+
+  doctor: isPopulated(appointment.doctor)
     ? {
         id: appointment.doctor._id,
         name: appointment.doctor.displayName,
@@ -10,7 +17,8 @@ const mapAppointment = (appointment) => ({
         price: appointment.doctor.price,
       }
     : null,
-  patient: appointment.patient
+
+  patient: isPopulated(appointment.patient)
     ? {
         id: appointment.patient._id,
         name: appointment.patient.displayName,

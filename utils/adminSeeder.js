@@ -1,22 +1,35 @@
+const bcrypt = require("bcryptjs");
 const User = require("../models/userModel");
 
 const runAdminSeed = async () => {
-  if (!process.env.ADMIN_EMAIL) return;
+  try {
+    if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) {
+      console.warn(
+        "⚠️ Admin seed skipped: missing ADMIN_EMAIL or ADMIN_PASSWORD",
+      );
 
-  const adminExists = await User.findOne({
-    email: process.env.ADMIN_EMAIL,
-  });
+      return;
+    }
 
-  if (!adminExists) {
-    const admin = await User.create({
+    const adminExists = await User.findOne({
+      email: process.env.ADMIN_EMAIL,
+    });
+
+    if (adminExists) return;
+
+    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 12);
+
+    await User.create({
       name: "System Admin",
       email: process.env.ADMIN_EMAIL,
-      password: process.env.ADMIN_PASSWORD,
-      passwordConfirm: process.env.ADMIN_PASSWORD,
+      password: hashedPassword,
+      passwordConfirm: hashedPassword,
       role: "admin",
     });
 
-    console.log("✅ Admin created:", admin.email);
+    console.log("✅ Admin account seeded successfully.");
+  } catch (err) {
+    console.error("❌ Admin seed failed:", err.message);
   }
 };
 
