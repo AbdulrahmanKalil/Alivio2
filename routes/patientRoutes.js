@@ -43,12 +43,12 @@ router
     authController.protect,
     authController.restrictTo("patient"),
     patientController.updatePatient,
+  )
+  .delete(
+    validate(patientIdSchema),
+    authController.protect,
+    authController.restrictTo("admin"),
+    patientController.deletePatient,
   );
-// .delete(
-//   validate(patientIdSchema),
-//   authController.protect,
-//   authController.restrictTo("doctor"),
-//   patientController.deletePatient,
-// );
 
 module.exports = router;

@@ -55,7 +55,7 @@ const patientSchema = new mongoose.Schema(
 );
 
 // cascade delete user
-patientSchema.pre("findOneAndDelete", async function(next) {
+patientSchema.pre("findOneAndDelete", async function (next) {
   const patient = await this.model.findOne(this.getFilter());
 
   if (patient?.user) {
@@ -66,7 +66,7 @@ patientSchema.pre("findOneAndDelete", async function(next) {
 });
 
 // virtual age
-patientSchema.virtual("age").get(function() {
+patientSchema.virtual("age").get(function () {
   if (!this.dateOfBirth) return null;
 
   const today = new Date();

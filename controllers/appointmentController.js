@@ -5,6 +5,7 @@ const AppError = require("../utils/appError");
 const Doctor = require("../models/doctorModel");
 const Patient = require("../models/patientModel");
 const { mapAppointments } = require("../utils/appointmentMapper");
+const mongoose = require("mongoose");
 
 exports.setDoctorId = (req, res, next) => {
   if (!req.body.doctor && req.params.doctorId) {
@@ -54,6 +55,22 @@ exports.bookAppointment = catchAsync(async (req, res, next) => {
   });
 });
 
+// exports.getAllAppointments = async (req, res, next) => {
+//   const features = new APIFeatures(Appointment.find(), req.query)
+//     .search()
+//     .filter()
+//     .sort()
+//     .limitFields()
+//     .paginate();
+//   const appointments = await features.query
+//     .select("-_id -createdAt -updatedAt")
+//     .populate("doctor", "displayName -_id")
+//     .populate("patient", "displayName dateOfBirth -_id");
+//   res.status(200).json({
+//     results: appointments.length,
+//     data: appointments,
+//   });
+// };
 exports.getAllAppointments = async (req, res, next) => {
   const features = new APIFeatures(Appointment.find(), req.query)
     .search()
