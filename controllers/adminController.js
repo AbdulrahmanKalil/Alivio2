@@ -101,7 +101,7 @@ const getAppointmentStats = catchAsync(async (req, res, next) => {
 });
 
 // ai
-const getFilteredAppointments = async (req, res, next) => {
+const getFiltered = async (req, res, next) => {
   try {
     const {
       startDate,
@@ -176,14 +176,13 @@ const getFilteredAppointments = async (req, res, next) => {
         $project: {
           patientName: "$patient.displayName",
           contactInfo: "$patient.phone",
+          age: "$patient.dateOfBirth",
+          gender: "$patient.gender",
           dateTime: {
             $dateToString: {
               format: "%Y-%m-%d %H:%M",
               date: "$startTime",
             },
-          },
-          invoiceId: {
-            $concat: ["#INV", { $toString: "$invoiceNumber" }],
           },
           practitioner: "$doctor.user.name",
           location: "$location.clinicName",
@@ -201,7 +200,6 @@ const getFilteredAppointments = async (req, res, next) => {
       total,
       page: +page,
       pages: Math.ceil(total / limit),
-      stats: statsObject,
       docs,
     });
   } catch (err) {
@@ -212,5 +210,5 @@ const getFilteredAppointments = async (req, res, next) => {
 module.exports = {
   getDashboard,
   getAppointmentStats,
-  getFilteredAppointments,
+  getFiltered,
 };

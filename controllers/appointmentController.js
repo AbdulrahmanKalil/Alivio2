@@ -55,22 +55,6 @@ exports.bookAppointment = catchAsync(async (req, res, next) => {
   });
 });
 
-// exports.getAllAppointments = async (req, res, next) => {
-//   const features = new APIFeatures(Appointment.find(), req.query)
-//     .search()
-//     .filter()
-//     .sort()
-//     .limitFields()
-//     .paginate();
-//   const appointments = await features.query
-//     .select("-_id -createdAt -updatedAt")
-//     .populate("doctor", "displayName -_id")
-//     .populate("patient", "displayName dateOfBirth -_id");
-//   res.status(200).json({
-//     results: appointments.length,
-//     data: appointments,
-//   });
-// };
 exports.getAllAppointments = async (req, res, next) => {
   const features = new APIFeatures(Appointment.find(), req.query)
     .search()
@@ -78,12 +62,10 @@ exports.getAllAppointments = async (req, res, next) => {
     .sort()
     .limitFields()
     .paginate();
-
   const appointments = await features.query
-    .select("doctor patient startTime  status")
-    .populate("doctor", "displayName ")
-    .populate("patient", "displayName ");
-
+    .select("-_id -createdAt -updatedAt")
+    .populate("doctor", "displayName -_id")
+    .populate("patient", "displayName dateOfBirth -_id");
   res.status(200).json({
     results: appointments.length,
     data: appointments,
