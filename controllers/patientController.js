@@ -6,6 +6,7 @@ const apiFeatures = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
 const Appointment = require("../models/appointmentModel");
 const mongoose = require("mongoose");
+const prescription = require("../models/PrescriptionModels");
 
 // getMyProfile
 exports.getMyProfile = catchAsync(async (req, res, next) => {
@@ -58,6 +59,36 @@ exports.getMyPatients = catchAsync(async (req, res, next) => {
     status: "success",
     results: patients.length,
     data: patients,
+  });
+});
+
+exports.getMymedicalHistory = catchAsync(async (req, res, next) => {
+  const patient = await Patient.findOne({ user: req.user.id });
+
+  if (!patient) {
+    return next(new AppError("Patient not found", 404));
+  }
+  const medicalHistory = await prescription
+    .find({
+      patient: patient._id,
+    })
+    .populate({
+      path: "doctor",
+      select: "displayName specialty",
+    })
+    .populate({
+      path: "patient",
+      select: "displayName ",
+    })
+    .populate({
+      path: "appointment",
+      select: "startTime",
+    });
+
+  res.status(200).json({
+    status: "success",
+    results: medicalHistory.length,
+    data: medicalHistory,
   });
 });
 

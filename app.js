@@ -15,7 +15,7 @@ const doctorRouter = require("./routes/doctorRoutes");
 const patientRouter = require("./routes/patientRoutes");
 const appointmentRouter = require("./routes/appointmentRoutes");
 const adminRouter = require("./routes/adminRoutes");
-
+const prescriptionRouter = require("./routes/prescriptionRoutes");
 const app = express();
 
 // ───────── Security Headers ─────────
@@ -71,6 +71,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/patients", patientRouter);
 app.use("/api/v1/appointments", appointmentRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/prescriptions", prescriptionRouter);
 
 // ───────── 404 Handler ─────────
 app.all("*", (req, res, next) => {

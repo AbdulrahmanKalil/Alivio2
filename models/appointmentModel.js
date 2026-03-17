@@ -42,6 +42,11 @@ const appointmentSchema = new mongoose.Schema(
       },
     },
 
+    prescriptionCreated: {
+      type: Boolean,
+      default: false,
+    },
+
     price: Number,
   },
   { timestamps: true },

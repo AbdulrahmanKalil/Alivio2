@@ -100,7 +100,7 @@ const getAppointmentStats = catchAsync(async (req, res, next) => {
   });
 });
 
-// ai
+// All ai
 const getFiltered = async (req, res, next) => {
   try {
     const {

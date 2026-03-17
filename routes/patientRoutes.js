@@ -25,6 +25,13 @@ router.get(
 );
 
 router.get(
+  "/myMedicalHistory",
+  authController.protect,
+  authController.restrictTo("patient"),
+  patientController.getMymedicalHistory,
+);
+
+router.get(
   "/me",
   authController.protect,
   authController.restrictTo("patient"),

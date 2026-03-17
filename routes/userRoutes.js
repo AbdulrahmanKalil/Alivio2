@@ -1,15 +1,31 @@
 const express = require("express");
 const userController = require("../controllers/userController");
 const authController = require("../controllers/authController");
+const upload = require("../middlewares/uploadMiddleware");
 
 const validate = require("../middlewares/validationMiddleware");
 const { signupDoctorSchema } = require("../utils/validators/userValidator");
 const { signupPatientSchema } = require("../utils/validators/userValidator");
-
 const { updateUserSchema } = require("../utils/validators/userValidator");
 
 const router = express.Router();
 
+// ───────── Upload Routes ─────────
+router.patch(
+  "/updatePhoto",
+  authController.protect, // ← عشان req.user.id يشتغل
+  upload.single("profilePic"),
+  userController.updatePhoto,
+);
+
+router.post(
+  "/scan",
+  authController.protect, // ← عشان req.user.id يشتغل
+  upload.single("medicalScan"),
+  userController.uploadScan,
+);
+
+// ───────── Auth Routes ─────────
 router.post(
   "/signup/patient",
   validate(signupPatientSchema),
@@ -30,6 +46,7 @@ router.patch(
   authController.resetPassword,
 );
 
+// ───────── User CRUD ─────────
 router.route("/").get(userController.getAllUsers);
 
 router

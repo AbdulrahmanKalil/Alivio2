@@ -28,10 +28,19 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please confirm your password"],
       validate: {
-        validator: function(el) {
+        validator: function (el) {
           return el === this.password;
         },
         message: "Passwords are not the same",
+      },
+    },
+    profilePic: {
+      url: {
+        type: String,
+        default: "default.jpg",
+      },
+      public_id: {
+        type: String,
       },
     },
 
@@ -49,7 +58,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-userSchema.pre("save", async function(next) {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
@@ -59,14 +68,14 @@ userSchema.pre("save", async function(next) {
   next();
 });
 
-userSchema.methods.correctPassword = async function(
+userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword,
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(
       this.passwordChangedAt.getTime() / 1000,
@@ -79,7 +88,7 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   return false;
 };
 
-userSchema.methods.createPasswordResetToken = function() {
+userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
 
   this.passwordResetToken = crypto
@@ -93,21 +102,23 @@ userSchema.methods.createPasswordResetToken = function() {
 };
 
 // Cascade delete profiles when user deleted
-userSchema.pre("deleteOne", { document: true, query: false }, async function(
-  next,
-) {
-  try {
-    if (this.role === "patient") {
-      await mongoose.model("Patient").deleteOne({ user: this._id });
-    } else if (this.role === "doctor") {
-      await mongoose.model("Doctor").deleteOne({ user: this._id });
-    }
+userSchema.pre(
+  "deleteOne",
+  { document: true, query: false },
+  async function (next) {
+    try {
+      if (this.role === "patient") {
+        await mongoose.model("Patient").deleteOne({ user: this._id });
+      } else if (this.role === "doctor") {
+        await mongoose.model("Doctor").deleteOne({ user: this._id });
+      }
 
-    next();
-  } catch (err) {
-    next(err);
-  }
-});
+      next();
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 const User = mongoose.model("User", userSchema);
 

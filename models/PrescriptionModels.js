@@ -1,25 +1,23 @@
+const mongoose = require("mongoose");
+
 const PrescriptionSchema = new mongoose.Schema(
   {
-    doctorId: {
+    doctor: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Doctor",
       required: true,
-      index: true,
     },
 
-    patientId: {
+    patient: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Patient",
       required: true,
-      index: true,
     },
 
-    appointmentId: {
+    appointment: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Appointment",
       required: true,
-      unique: true,
-      index: true,
     },
 
     diagnosis: {
@@ -27,7 +25,7 @@ const PrescriptionSchema = new mongoose.Schema(
       required: true,
     },
 
-    medicines: [
+    medications: [
       {
         name: { type: String, required: true },
         strength: String,
@@ -35,13 +33,6 @@ const PrescriptionSchema = new mongoose.Schema(
         frequency: { type: String, required: true },
         duration: { type: String, required: true },
         instructions: String,
-
-        status: {
-          type: String,
-          enum: ["active", "stopped", "completed"],
-          default: "active",
-        },
-
         startDate: Date,
         stopDate: Date,
       },
@@ -62,3 +53,5 @@ const PrescriptionSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+module.exports = mongoose.model("Prescription", PrescriptionSchema);

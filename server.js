@@ -1,8 +1,7 @@
 const dotenv = require("dotenv");
+dotenv.config({ path: `${__dirname}/config.env` });
 const mongoose = require("mongoose");
 const runAdminSeed = require("./utils/adminSeeder");
-
-dotenv.config({ path: "./config.env", quiet: true });
 
 const app = require("./app");
 

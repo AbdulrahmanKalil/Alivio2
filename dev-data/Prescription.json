@@ -1,0 +1,165 @@
+[
+  {
+    "doctorId": "69a9f3233306c91cc59f8245",
+    "patientId": "69a9f3243306c91cc59f8269",
+    "appointmentId": "70b1a1113306c91cc59f9001",
+    "diagnosis": "Upper respiratory infection",
+    "medicines": [
+      {
+        "name": "Augmentin",
+        "strength": "625mg",
+        "dosage": "1 tablet",
+        "frequency": "twice daily",
+        "duration": "5 days",
+        "instructions": "after meals"
+      }
+    ],
+    "notes": "Drink plenty of fluids",
+    "followUpDate": "2026-03-12T10:00:00Z"
+  },
+  {
+    "doctorId": "69a9f3233306c91cc59f8245",
+    "patientId": "69a9f3243306c91cc59f8268",
+    "appointmentId": "70b1a1113306c91cc59f9002",
+    "diagnosis": "Migraine",
+    "medicines": [
+      {
+        "name": "Panadol",
+        "strength": "500mg",
+        "dosage": "2 tablets",
+        "frequency": "three times daily",
+        "duration": "3 days"
+      }
+    ],
+    "notes": "Avoid bright light"
+  },
+  {
+    "doctorId": "69a9f3233306c91cc59f8247",
+    "patientId": "69a9f3243306c91cc59f8267",
+    "appointmentId": "70b1a1113306c91cc59f9003",
+    "diagnosis": "Hypertension",
+    "medicines": [
+      {
+        "name": "Amlodipine",
+        "strength": "5mg",
+        "dosage": "1 tablet",
+        "frequency": "once daily",
+        "duration": "30 days"
+      }
+    ],
+    "notes": "Monitor blood pressure daily"
+  },
+  {
+    "doctorId": "69a9f3233306c91cc59f8247",
+    "patientId": "69a9f3243306c91cc59f8268",
+    "appointmentId": "70b1a1113306c91cc59f9004",
+    "diagnosis": "Gastritis",
+    "medicines": [
+      {
+        "name": "Omeprazole",
+        "strength": "20mg",
+        "dosage": "1 capsule",
+        "frequency": "once daily",
+        "duration": "14 days",
+        "instructions": "before breakfast"
+      }
+    ],
+    "notes": "Avoid spicy food"
+  },
+  {
+    "doctorId": "69a9f3233306c91cc59f8245",
+    "patientId": "69a9f3243306c91cc59f8267",
+    "appointmentId": "70b1a1113306c91cc59f9005",
+    "diagnosis": "Diabetes Type 2",
+    "medicines": [
+      {
+        "name": "Metformin",
+        "strength": "850mg",
+        "dosage": "1 tablet",
+        "frequency": "twice daily",
+        "duration": "30 days"
+      }
+    ],
+    "notes": "Follow diabetic diet"
+  },
+  {
+    "doctorId": "69a9f3233306c91cc59f8245",
+    "patientId": "69a9f3243306c91cc59f8269",
+    "appointmentId": "70b1a1113306c91cc59f9006",
+    "diagnosis": "Allergic rhinitis",
+    "medicines": [
+      {
+        "name": "Claritin",
+        "strength": "10mg",
+        "dosage": "1 tablet",
+        "frequency": "once daily",
+        "duration": "7 days"
+      }
+    ],
+    "notes": "Avoid dust exposure"
+  },
+  {
+    "doctorId": "69a9f3233306c91cc59f8247",
+    "patientId": "69a9f3243306c91cc59f8269",
+    "appointmentId": "70b1a1113306c91cc59f9007",
+    "diagnosis": "Bronchitis",
+    "medicines": [
+      {
+        "name": "Azithromycin",
+        "strength": "500mg",
+        "dosage": "1 tablet",
+        "frequency": "once daily",
+        "duration": "3 days"
+      }
+    ],
+    "notes": "Rest and hydration"
+  },
+  {
+    "doctorId": "69a9f3233306c91cc59f8247",
+    "patientId": "69a9f3243306c91cc59f8268",
+    "appointmentId": "70b1a1113306c91cc59f9008",
+    "diagnosis": "Vitamin D deficiency",
+    "medicines": [
+      {
+        "name": "Vitamin D3",
+        "strength": "1000 IU",
+        "dosage": "1 tablet",
+        "frequency": "once daily",
+        "duration": "60 days"
+      }
+    ],
+    "notes": "Sun exposure recommended"
+  },
+  {
+    "doctorId": "69a9f3233306c91cc59f8245",
+    "patientId": "69a9f3243306c91cc59f8267",
+    "appointmentId": "70b1a1113306c91cc59f9009",
+    "diagnosis": "Back pain",
+    "medicines": [
+      {
+        "name": "Diclofenac",
+        "strength": "50mg",
+        "dosage": "1 tablet",
+        "frequency": "twice daily",
+        "duration": "5 days"
+      }
+    ],
+    "notes": "Avoid heavy lifting"
+  },
+  {
+    "doctorId": "69a9f3233306c91cc59f8245",
+    "patientId": "69a9f3243306c91cc59f8268",
+    "appointmentId": "70b1a1113306c91cc59f9010",
+    "diagnosis": "Acute sinusitis",
+    "medicines": [
+      {
+        "name": "Amoxicillin",
+        "strength": "500mg",
+        "dosage": "1 capsule",
+        "frequency": "three times daily",
+        "duration": "7 days"
+      }
+    ],
+    "notes": "Steam inhalation recommended"
+  }
+]
