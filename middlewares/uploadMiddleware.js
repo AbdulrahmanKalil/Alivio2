@@ -9,8 +9,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-console.log("CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME);
-
 // Config هنا مباشرة
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
