@@ -33,7 +33,7 @@ app.use(
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-
+app.set("trust proxy", 1);
 // ───────── Rate Limiting ─────────
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -43,8 +43,6 @@ const authLimiter = rateLimit({
 
 app.use("/api/v1/users/login", authLimiter);
 app.use("/api/v1/users/forgotPassword", authLimiter);
-
-app.set("trust proxy", 1);
 
 if (process.env.NODE_ENV === "production") {
   const apiLimiter = rateLimit({
