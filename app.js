@@ -73,6 +73,14 @@ app.use("/api/v1/appointments", appointmentRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/prescriptions", prescriptionRouter);
 
+// ───────── Health Check / Home Route ─────────
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Welcome to Alivio2 API! The server is running smoothly.",
+  });
+});
+
 // ───────── 404 Handler ─────────
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl}`, 404));
