@@ -44,6 +44,8 @@ const authLimiter = rateLimit({
 app.use("/api/v1/users/login", authLimiter);
 app.use("/api/v1/users/forgotPassword", authLimiter);
 
+app.set("trust proxy", 1);
+
 if (process.env.NODE_ENV === "production") {
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
