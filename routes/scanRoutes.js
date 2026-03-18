@@ -13,10 +13,21 @@ router.use(authController.protect);
 
 // POST /api/v1/scans  ← رفع وتحليل صورة
 // GET  /api/v1/scans  ← جلب كل فحوصاتك
+
 router
   .route("/")
   .get(scanController.getMyScan)
-  .post(uploadScanImage, analyzeScan, scanController.uploadScan);
+  .post(
+    (req, res, next) => {
+      console.log("FILE:", req.file);
+      console.log("BODY:", req.body);
+      next();
+    },
+    uploadScanImage,
+    analyzeScan,
+    scanController.uploadScan,
+  );
+// .post(uploadScanImage, analyzeScan, scanController.uploadScan);
 
 // GET    /api/v1/scans/:id  ← جلب فحص معين
 // DELETE /api/v1/scans/:id  ← حذف فحص
