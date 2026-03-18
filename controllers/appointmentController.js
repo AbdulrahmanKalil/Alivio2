@@ -18,23 +18,21 @@ exports.bookAppointment = catchAsync(async (req, res, next) => {
   const patientId = req.user.patientId;
   const doctorId = req.params.doctorId;
 
-  const doctor = await Doctor.findById(doctorId);
+  const doctor = await Doctor.findById(doctorId).lean();
 
   if (!doctor) {
     return next(new AppError("Doctor not found", 404));
   }
 
   const start = new Date(req.body.startTime);
-
   const duration = 15;
-
   const end = new Date(start.getTime() + duration * 60000);
 
   const conflict = await Appointment.findOne({
     doctor: doctorId,
     startTime: { $lt: end },
     endTime: { $gt: start },
-  });
+  }).lean();
 
   if (conflict) {
     return next(new AppError("This time slot is already booked", 400));
@@ -55,22 +53,26 @@ exports.bookAppointment = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAllAppointments = async (req, res, next) => {
-  const features = new APIFeatures(Appointment.find(), req.query)
+// ✅ Fixed: added catchAsync + lean()
+exports.getAllAppointments = catchAsync(async (req, res, next) => {
+  const features = new APIFeatures(Appointment.find().lean(), req.query)
     .search()
     .filter()
     .sort()
     .limitFields()
     .paginate();
+
   const appointments = await features.query
-    .select("-_id -createdAt -updatedAt")
-    .populate("doctor", "displayName -_id")
-    .populate("patient", "displayName dateOfBirth -_id");
+    .select("-createdAt -updatedAt")
+    .populate("doctor", "displayName")
+    .populate("patient", "displayName dateOfBirth");
+
   res.status(200).json({
+    status: "success",
     results: appointments.length,
     data: appointments,
   });
-};
+});
 
 exports.getMyAppointments = catchAsync(async (req, res) => {
   let filter = {};
@@ -89,15 +91,11 @@ exports.getMyAppointments = catchAsync(async (req, res) => {
     .limitFields()
     .paginate();
 
+  // ✅ Fixed: added lean()
   const appointments = await features.query
-    .populate({
-      path: "doctor",
-      select: "displayName specialty price",
-    })
-    .populate({
-      path: "patient",
-      select: "displayName email",
-    });
+    .lean()
+    .populate({ path: "doctor", select: "displayName specialty price" })
+    .populate({ path: "patient", select: "displayName email" });
 
   const cleanAppointments = mapAppointments(appointments);
 
@@ -108,58 +106,27 @@ exports.getMyAppointments = catchAsync(async (req, res) => {
   });
 });
 
-// exports.updateAppointmentStatus = catchAsync(async (req, res, next) => {
-//   const { status } = req.body;
-
-//   const allowedStatus = ["confirmed", "cancelled"];
-
-//   if (!allowedStatus.includes(status)) {
-//     return next(new AppError("Invalid status value", 400));
-//   }
-
-//   const appointment = await Appointment.findOneAndUpdate(
-//     {
-//       _id: req.params.id,
-//       doctor: req.user.doctorId,
-//     },
-//     { status },
-//     {
-//       new: true,
-//       runValidators: true,
-//     },
-//   );
-
-//   if (!appointment) {
-//     return next(new AppError("Appointment not found or not authorized", 404));
-//   }
-
-//   res.status(200).json({
-//     status: "success",
-//     data: {
-//       appointment,
-//     },
-//   });
-// });
-
 exports.cancelAppointmentByDoctor = catchAsync(async (req, res, next) => {
   const { status } = req.body;
-  // مسموح يعمل ايه
+
   const allowedStatus = ["confirmed", "cancelled", "completed"];
   if (!allowedStatus.includes(status)) {
     return next(new AppError("Invalid status value", 400));
   }
+
   const appointment = await Appointment.findOne({
     _id: req.params.id,
     doctor: req.user.doctorId,
   });
+
   if (!appointment) {
     return next(new AppError("Appointment not found or not authorized", 404));
   }
+
   const appointmentTime = new Date(appointment.startTime);
   const now = new Date();
 
   if (status === "cancelled") {
-    // مينفعش إلغاء موعد تم إلغاؤه أو إكماله
     if (["cancelled", "completed"].includes(appointment.status)) {
       return next(
         new AppError(
@@ -169,7 +136,7 @@ exports.cancelAppointmentByDoctor = catchAsync(async (req, res, next) => {
       );
     }
   }
-  // مينفعش إلغاء موعد بدأ بالفعل
+
   if (now >= appointmentTime) {
     return next(
       new AppError(
@@ -178,7 +145,7 @@ exports.cancelAppointmentByDoctor = catchAsync(async (req, res, next) => {
       ),
     );
   }
-  // لازم يكون في مرحله pending
+
   if (status === "confirmed") {
     if (appointment.status !== "pending") {
       return next(
@@ -187,7 +154,6 @@ exports.cancelAppointmentByDoctor = catchAsync(async (req, res, next) => {
     }
   }
 
-  // لازم يكون في
   if (status === "completed") {
     if (appointment.status !== "confirmed") {
       return next(
@@ -208,12 +174,11 @@ exports.cancelAppointmentByDoctor = catchAsync(async (req, res, next) => {
     }
   }
 
-  // 4. تحضير بيانات التحديث
   const updateData = {
     status,
     updatedBy: req.user._id,
   };
-  // إضافة حقول خاصة بكل حالة
+
   if (status === "cancelled") {
     updateData.cancelledBy = req.user._id;
     updateData.cancelledAt = now;
@@ -224,15 +189,13 @@ exports.cancelAppointmentByDoctor = catchAsync(async (req, res, next) => {
     updateData.completedBy = req.user._id;
     updateData.completedAt = now;
   }
-  // 5. تحديث الموعد
+
   appointment.set(updateData);
   await appointment.save({ validateBeforeSave: true });
 
   res.status(200).json({
     status: "success",
-    data: {
-      appointment,
-    },
+    data: { appointment },
   });
 });
 
@@ -241,14 +204,8 @@ exports.cancelAppointmentByPatient = catchAsync(async (req, res, next) => {
     _id: req.params.id,
     patient: req.user.patientId,
   })
-    .populate({
-      path: "doctor",
-      select: "displayName specialty price",
-    })
-    .populate({
-      path: "patient",
-      select: "displayName email",
-    });
+    .populate({ path: "doctor", select: "displayName specialty price" })
+    .populate({ path: "patient", select: "displayName email" });
 
   if (!appointment) {
     return next(new AppError("Appointment not found or not authorized", 404));
@@ -256,7 +213,6 @@ exports.cancelAppointmentByPatient = catchAsync(async (req, res, next) => {
 
   const appointmentTime = new Date(appointment.startTime);
   const now = new Date();
-
   const hoursDiff =
     (appointmentTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
@@ -294,16 +250,12 @@ exports.cancelAppointmentByPatient = catchAsync(async (req, res, next) => {
     updatedBy: req.user._id,
   });
 
-  await appointment.save({
-    validateBeforeSave: true,
-  });
+  await appointment.save({ validateBeforeSave: true });
 
   const cleanAppointment = mapAppointments([appointment]);
 
   res.status(200).json({
     status: "success",
-    data: {
-      appointment: cleanAppointment[0],
-    },
+    data: { appointment: cleanAppointment[0] },
   });
 });

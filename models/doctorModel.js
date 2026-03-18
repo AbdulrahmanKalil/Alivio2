@@ -63,9 +63,10 @@ const doctorSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-// Hide inactive doctors
+// ✅ صح
 doctorSchema.pre(/^find/, function (next) {
   this.find({ isActive: { $ne: false } });
+  next(); // ← اللي كان ناقص
 });
 
 // Delete doctor appointments when doctor deleted
@@ -76,5 +77,7 @@ doctorSchema.pre("findOneAndDelete", async function (next) {
     await mongoose.model("Appointment").deleteMany({ doctor: doctor._id });
   }
 });
+doctorSchema.index({ isActive: 1 });
+doctorSchema.index({ specialty: 1 });
 
 module.exports = mongoose.model("Doctor", doctorSchema);
