@@ -16,6 +16,8 @@ const patientRouter = require("./routes/patientRoutes");
 const appointmentRouter = require("./routes/appointmentRoutes");
 const adminRouter = require("./routes/adminRoutes");
 const prescriptionRouter = require("./routes/prescriptionRoutes");
+const scanRouter = require("./routes/scanRoutes"); // ✅ إضافة
+
 const app = express();
 
 // ───────── Security Headers ─────────
@@ -34,6 +36,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 app.set("trust proxy", 1);
+
 // ───────── Rate Limiting ─────────
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -72,6 +75,7 @@ app.use("/api/v1/patients", patientRouter);
 app.use("/api/v1/appointments", appointmentRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/prescriptions", prescriptionRouter);
+app.use("/api/v1/scans", scanRouter); // ✅ إضافة
 
 // ───────── Health Check / Home Route ─────────
 app.get("/", (req, res) => {

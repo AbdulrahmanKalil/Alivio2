@@ -13,16 +13,9 @@ const router = express.Router();
 // ───────── Upload Routes ─────────
 router.patch(
   "/updatePhoto",
-  authController.protect, // ← عشان req.user.id يشتغل
+  authController.protect,
   upload.single("profilePic"),
   userController.updatePhoto,
-);
-
-router.post(
-  "/scan",
-  authController.protect, // ← عشان req.user.id يشتغل
-  upload.single("medicalScan"),
-  userController.uploadScan,
 );
 
 // ───────── Auth Routes ─────────

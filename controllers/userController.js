@@ -69,14 +69,38 @@ exports.updatePhoto = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.uploadScan = catchAsync(async (req, res, next) => {
-  if (!req.file) {
-    return next(new AppError("برجاء رفع صورة", 400));
-  }
+// exports.uploadScan = catchAsync(async (req, res, next) => {
+//   if (!req.file) {
+//     return next(new AppError("برجاء رفع صورة", 400));
+//   }
 
-  res.status(200).json({
-    status: "success",
-    url: req.file.path,
-    public_id: req.file.filename,
-  });
-});
+//   res.status(200).json({
+//     status: "success",
+//     url: req.file.path,
+//     public_id: req.file.filename,
+//   });
+// });
+
+// // scanController.js
+// exports.uploadScan = catchAsync(async (req, res, next) => {
+//   if (!req.user) return next(new AppError("يجب تسجيل الدخول", 401));
+
+//   const scan = await Scan.create({
+//     imageUrl: req.file.path,
+//     publicId: req.file.filename,
+//     scanType: req.body.scanType,
+//     aiResult: req.aiResult, // ← جاي من الـ middleware
+//     status: req.aiStatus, // ← جاي من الـ middleware
+//     errorMessage: req.aiError, // ← جاي من الـ middleware
+//     user: req.user.id,
+//   });
+
+//   res.status(scan.status === "completed" ? 201 : 207).json({
+//     status: "success",
+//     message:
+//       scan.status === "completed"
+//         ? "تم تحليل الصورة بنجاح"
+//         : "تم رفع الصورة ولكن فشل التحليل",
+//     data: { scan },
+//   });
+// });
