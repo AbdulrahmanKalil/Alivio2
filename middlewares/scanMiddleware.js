@@ -2,8 +2,9 @@
 
 const axios = require("axios");
 const multer = require("multer");
+const FormData = require("form-data");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const cloudinary = require("cloudinary").v2;
+const cloudinary = require("../utils/cloudinary");
 const AppError = require("../utils/appError");
 
 // ─── Storage خاص بالـ scans بدون ضغط ───────────────────────────
@@ -12,7 +13,6 @@ const scanStorage = new CloudinaryStorage({
   params: async (req, file) => ({
     folder: "medical-scans",
     public_id: `scan-${Date.now()}`,
-    // مفيش transformation عشان الـ AI يشوف الصورة بجودة عالية
   }),
 });
 
@@ -59,10 +59,25 @@ const analyzeScan = async (req, res, next) => {
   }
 
   try {
+    // جيب الصورة من Cloudinary
+    const imageResponse = await axios.get(req.file.path, {
+      responseType: "arraybuffer",
+    });
+
+    // ابعتها للـ AI كـ multipart/form-data
+    const formData = new FormData();
+    formData.append("file", imageResponse.data, {
+      filename: req.file.originalname,
+      contentType: req.file.mimetype,
+    });
+
     const aiResponse = await axios.post(
       `${AI_BASE_URL}${SCAN_ENDPOINTS[scanType]}`,
-      { image_url: req.file.path },
-      { timeout: 30000 },
+      formData,
+      {
+        headers: { ...formData.getHeaders() },
+        timeout: 30000,
+      },
     );
 
     req.aiResult = aiResponse.data;

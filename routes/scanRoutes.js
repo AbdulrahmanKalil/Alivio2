@@ -14,26 +14,21 @@ router.use(authController.protect);
 // POST /api/v1/scans  ← رفع وتحليل صورة
 // GET  /api/v1/scans  ← جلب كل فحوصاتك
 
+// في ملف الـ Routes
+router.route("/").get(scanController.getMyScan);
 router
   .route("/")
   .get(scanController.getMyScan)
   .post(
+    uploadScanImage, // استدعاء مباشر لأنه جاهز
     (req, res, next) => {
-      console.log("FILE:", req.file);
-      console.log("BODY:", req.body);
+      // الـ logs دي مهمة جداً للتأكد من نجاح الرفع لـ Cloudinary
+      console.log("FILE FROM CLOUDINARY:", req.file ? req.file.path : "NULL");
+      console.log("BODY DATA:", req.body);
       next();
     },
-    uploadScanImage,
     analyzeScan,
     scanController.uploadScan,
   );
-// .post(uploadScanImage, analyzeScan, scanController.uploadScan);
-
-// GET    /api/v1/scans/:id  ← جلب فحص معين
-// DELETE /api/v1/scans/:id  ← حذف فحص
-router
-  .route("/:id")
-  .get(scanController.getScan)
-  .delete(scanController.deleteScan);
 
 module.exports = router;
