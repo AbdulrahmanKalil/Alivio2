@@ -1,35 +1,42 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Scan = require("../models/scanModel");
+const cloudinary = require("../utils/cloudinary");
 
-// رفع صورة وتحليلها بالـ AI
+// 1. رفع صورة وتحليلها بالـ AI
 exports.uploadScan = catchAsync(async (req, res, next) => {
-  if (!req.user) return next(new AppError("يجب تسجيل الدخول أولاً", 401));
+  // التأكد من أن التحليل نجح (من الـ Middleware السابق)
+  // لو الـ aiStatus مش completed، الميدل وير المفروض يكون وقف العملية،
+  // لكن دي خطوة تأكيدية (Double Check)
+  if (!req.aiResult || req.aiStatus !== "completed") {
+    if (req.file && req.file.filename) {
+      await cloudinary.uploader.destroy(req.file.filename);
+    }
+    return next(
+      new AppError(req.aiError || "فشل تحليل الصورة، لم يتم حفظ البيانات", 422),
+    );
+  }
 
+  // الحفظ فقط في حالة النجاح
   const scan = await Scan.create({
     imageUrl: req.file.path,
     publicId: req.file.filename,
     scanType: req.body.scanType,
-    aiResult: req.aiResult, // جاي من analyzeScan middleware
-    status: req.aiStatus, // جاي من analyzeScan middleware
-    errorMessage: req.aiError, // جاي من analyzeScan middleware
+    aiResult: req.aiResult,
+    status: "completed",
     user: req.user.id,
   });
 
-  res.status(scan.status === "completed" ? 201 : 207).json({
+  res.status(201).json({
     status: "success",
-    message:
-      scan.status === "completed"
-        ? "تم تحليل الصورة بنجاح"
-        : "تم رفع الصورة ولكن فشل التحليل",
+    message: "تم تحليل الصورة وحفظها بنجاح",
     data: { scan },
   });
 });
 
-// جلب كل فحوصات المستخدم
+// 2. جلب كل فحوصات المستخدم
 exports.getMyScan = catchAsync(async (req, res, next) => {
   const scans = await Scan.find({ user: req.user.id }).sort("-createdAt");
-
   res.status(200).json({
     status: "success",
     results: scans.length,
@@ -37,12 +44,27 @@ exports.getMyScan = catchAsync(async (req, res, next) => {
   });
 });
 
-// جلب فحص واحد بالـ ID
-exports.getScan = catchAsync(async (req, res, next) => {
+// 3. حذف فحص (مع مسح الصورة من Cloudinary)
+exports.deleteScan = catchAsync(async (req, res, next) => {
   const scan = await Scan.findById(req.params.id);
 
   if (!scan) return next(new AppError("لم يتم العثور على الفحص", 404));
+  if (scan.user.toString() !== req.user.id)
+    return next(new AppError("غير مصرح لك بحذف هذا الفحص", 403));
 
+  // مسح الصورة من Cloudinary لتوفير مساحة
+  if (scan.publicId) {
+    await cloudinary.uploader.destroy(scan.publicId);
+  }
+
+  await scan.deleteOne();
+  res.status(204).json({ status: "success", data: null });
+});
+
+// 4. جلب فحص واحد
+exports.getScan = catchAsync(async (req, res, next) => {
+  const scan = await Scan.findById(req.params.id);
+  if (!scan) return next(new AppError("لم يتم العثور على الفحص", 404));
   if (scan.user.toString() !== req.user.id)
     return next(new AppError("غير مصرح لك بمشاهدة هذا الفحص", 403));
 
@@ -50,18 +72,4 @@ exports.getScan = catchAsync(async (req, res, next) => {
     status: "success",
     data: { scan },
   });
-});
-
-// حذف فحص
-exports.deleteScan = catchAsync(async (req, res, next) => {
-  const scan = await Scan.findById(req.params.id);
-
-  if (!scan) return next(new AppError("لم يتم العثور على الفحص", 404));
-
-  if (scan.user.toString() !== req.user.id)
-    return next(new AppError("غير مصرح لك بحذف هذا الفحص", 403));
-
-  await scan.deleteOne();
-
-  res.status(204).json({ status: "success", data: null });
 });

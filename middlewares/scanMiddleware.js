@@ -1,5 +1,3 @@
-// middlewares/scanMiddleware.js
-
 const axios = require("axios");
 const multer = require("multer");
 const FormData = require("form-data");
@@ -7,7 +5,7 @@ const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("../utils/cloudinary");
 const AppError = require("../utils/appError");
 
-// ─── Storage خاص بالـ scans بدون ضغط ───────────────────────────
+// ─── Storage خاص بالـ scans ──────────────────────────────────
 const scanStorage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => ({
@@ -16,8 +14,8 @@ const scanStorage = new CloudinaryStorage({
   }),
 });
 
-// middleware 1 — رفع الصورة على Cloudinary
-const uploadScanImage = multer({
+// ─── 1. ميدل وير الرفع (تصدير مباشر) ──────────────────────────
+exports.uploadScanImage = multer({
   storage: scanStorage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (req, file, cb) => {
@@ -29,9 +27,8 @@ const uploadScanImage = multer({
   },
 }).single("medicalScan");
 
-// ─── AI Config ───────────────────────────────────────────────────
+// ─── AI Config ───────────────────────────────────────────────
 const AI_BASE_URL = "https://morefaat69-medical-ai-api.hf.space";
-
 const SCAN_ENDPOINTS = {
   skin: "/predict/skin",
   breast: "/predict/breast",
@@ -42,29 +39,21 @@ const SCAN_ENDPOINTS = {
   kidney: "/predict/kidney",
 };
 
-// middleware 2 — إرسال الصورة للـ AI
-const analyzeScan = async (req, res, next) => {
-  if (!req.file) {
-    return next(new AppError("برجاء رفع صورة", 400));
-  }
+// ─── 2. ميدل وير التحليل (تصدير مباشر) ────────────────────────
+exports.analyzeScan = async (req, res, next) => {
+  if (!req.file) return next(new AppError("برجاء رفع صورة", 400));
 
   const scanType = req.body.scanType;
   if (!scanType || !SCAN_ENDPOINTS[scanType]) {
-    return next(
-      new AppError(
-        `نوع الفحص غير صالح. المتاح: ${Object.keys(SCAN_ENDPOINTS).join(", ")}`,
-        400,
-      ),
-    );
+    if (req.file.filename) await cloudinary.uploader.destroy(req.file.filename);
+    return next(new AppError("نوع الفحص غير صالح", 400));
   }
 
   try {
-    // جيب الصورة من Cloudinary
     const imageResponse = await axios.get(req.file.path, {
       responseType: "arraybuffer",
     });
 
-    // ابعتها للـ AI كـ multipart/form-data
     const formData = new FormData();
     formData.append("file", imageResponse.data, {
       filename: req.file.originalname,
@@ -82,14 +71,13 @@ const analyzeScan = async (req, res, next) => {
 
     req.aiResult = aiResponse.data;
     req.aiStatus = "completed";
+    next();
   } catch (err) {
-    console.error("AI ERROR:", err.response?.data || err.message);
-    req.aiResult = null;
-    req.aiStatus = "failed";
-    req.aiError = err.response?.data?.message || "AI processing failed";
+    if (req.file && req.file.filename) {
+      await cloudinary.uploader.destroy(req.file.filename);
+    }
+    return next(
+      new AppError("فشل تحليل الذكاء الاصطناعي، تم إلغاء العملية", 500),
+    );
   }
-
-  next();
 };
-
-module.exports = { uploadScanImage, analyzeScan };

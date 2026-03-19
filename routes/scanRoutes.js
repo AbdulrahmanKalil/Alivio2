@@ -2,33 +2,33 @@ const express = require("express");
 const router = express.Router();
 
 const authController = require("../controllers/authController");
+const scanController = require("../controllers/scanController");
 const {
   uploadScanImage,
   analyzeScan,
 } = require("../middlewares/scanMiddleware");
-const scanController = require("../controllers/scanController");
 
-// كل الـ routes محتاجة login
+// 1) حماية كل المسارات
 router.use(authController.protect);
 
-// POST /api/v1/scans  ← رفع وتحليل صورة
-// GET  /api/v1/scans  ← جلب كل فحوصاتك
-
-// في ملف الـ Routes
-router.route("/").get(scanController.getMyScan);
+// 2) تعريف المسارات
 router
   .route("/")
-  .get(scanController.getMyScan)
+  .get(scanController.getMyScan) // جلب الفحوصات
   .post(
-    uploadScanImage, // استدعاء مباشر لأنه جاهز
+    uploadScanImage,
     (req, res, next) => {
-      // الـ logs دي مهمة جداً للتأكد من نجاح الرفع لـ Cloudinary
       console.log("FILE FROM CLOUDINARY:", req.file ? req.file.path : "NULL");
-      console.log("BODY DATA:", req.body);
       next();
     },
     analyzeScan,
-    scanController.uploadScan,
+    scanController.uploadScan, // تأكد أن الاسم مطابق للي في الـ Controller
   );
+
+// 3) مسارات الـ ID (لو محتاجها)
+router
+  .route("/:id")
+  .get(scanController.getScan)
+  .delete(scanController.deleteScan);
 
 module.exports = router;
