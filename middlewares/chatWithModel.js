@@ -9,7 +9,7 @@ exports.chatWithModel = async (req, res) => {
 
   try {
     const response = await axios.post(
-      "https://11amr-arevo-2.hf.space/chat",
+      process.env.AI_API_URL,
       { text: message },
       { responseType: "stream" },
     );
@@ -30,7 +30,7 @@ exports.chatWithModel = async (req, res) => {
       res.json({ reply: fullReply });
     });
 
-    response.data.on("error", (err) => {
+    response.data.on("error", () => {
       res.status(500).json({ message: "Stream error" });
     });
   } catch (err) {
