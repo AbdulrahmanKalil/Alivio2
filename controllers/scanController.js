@@ -5,9 +5,6 @@ const cloudinary = require("../utils/cloudinary");
 
 // 1. رفع صورة وتحليلها بالـ AI
 exports.uploadScan = catchAsync(async (req, res, next) => {
-  // التأكد من أن التحليل نجح (من الـ Middleware السابق)
-  // لو الـ aiStatus مش completed، الميدل وير المفروض يكون وقف العملية،
-  // لكن دي خطوة تأكيدية (Double Check)
   if (!req.aiResult || req.aiStatus !== "completed") {
     if (req.file && req.file.filename) {
       await cloudinary.uploader.destroy(req.file.filename);
@@ -17,7 +14,6 @@ exports.uploadScan = catchAsync(async (req, res, next) => {
     );
   }
 
-  // الحفظ فقط في حالة النجاح
   const scan = await Scan.create({
     imageUrl: req.file.path,
     publicId: req.file.filename,

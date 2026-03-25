@@ -8,24 +8,13 @@ const {
   analyzeScan,
 } = require("../middlewares/scanMiddleware");
 
-// 1) حماية كل المسارات
 router.use(authController.protect);
 
-// 2) تعريف المسارات
 router
   .route("/")
   .get(scanController.getMyScan) // جلب الفحوصات
-  .post(
-    uploadScanImage,
-    (req, res, next) => {
-      console.log("FILE FROM CLOUDINARY:", req.file ? req.file.path : "NULL");
-      next();
-    },
-    analyzeScan,
-    scanController.uploadScan, // تأكد أن الاسم مطابق للي في الـ Controller
-  );
+  .post(uploadScanImage, analyzeScan, scanController.uploadScan);
 
-// 3) مسارات الـ ID (لو محتاجها)
 router
   .route("/:id")
   .get(scanController.getScan)

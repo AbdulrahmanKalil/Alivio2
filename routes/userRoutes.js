@@ -7,6 +7,7 @@ const validate = require("../middlewares/validationMiddleware");
 const { signupDoctorSchema } = require("../utils/validators/userValidator");
 const { signupPatientSchema } = require("../utils/validators/userValidator");
 const { updateUserSchema } = require("../utils/validators/userValidator");
+const { resetPasswordSchema } = require("../utils/validators/userValidator");
 
 const router = express.Router();
 
@@ -35,7 +36,7 @@ router.post("/login", authController.login);
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch(
   "/resetPassword/:token",
-  validate(updateUserSchema),
+  validate(resetPasswordSchema),
   authController.resetPassword,
 );
 

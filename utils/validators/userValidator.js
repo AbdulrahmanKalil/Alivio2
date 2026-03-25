@@ -10,21 +10,11 @@ const {
 
 exports.signupDoctorSchema = {
   body: Joi.object({
-    name: Joi.string()
-      .trim()
-      .min(3)
-      .max(50)
-      .required(),
+    name: Joi.string().trim().min(3).max(50).required(),
 
-    email: Joi.string()
-      .email()
-      .max(254)
-      .required(),
+    email: Joi.string().email().max(254).required(),
 
-    password: Joi.string()
-      .min(8)
-      .max(72)
-      .required(),
+    password: Joi.string().min(8).max(72).required(),
 
     passwordConfirm: Joi.string()
       .valid(Joi.ref("password"))
@@ -33,41 +23,24 @@ exports.signupDoctorSchema = {
         "any.only": "Passwords do not match",
       }),
 
-    displayName: Joi.string()
-      .trim()
-      .min(3)
-      .max(50)
-      .required(),
+    displayName: Joi.string().trim().min(3).max(50).required(),
 
-    phone: Joi.string()
-      .pattern(PHONE_REGEX)
-      .required()
-      .messages({
-        "string.pattern.base": "Please provide a valid Egyptian phone number",
-      }),
+    phone: Joi.string().pattern(PHONE_REGEX).required().messages({
+      "string.pattern.base": "Please provide a valid Egyptian phone number",
+    }),
 
     specialty: Joi.string()
       .lowercase()
       .valid(...SPECIALTIES)
       .required(),
 
-    yearsOfExperience: Joi.number()
-      .min(0)
-      .max(50)
-      .required(),
+    yearsOfExperience: Joi.number().min(0).max(50).required(),
 
-    price: Joi.number()
-      .min(50)
-      .required(),
+    price: Joi.number().min(50).required(),
 
-    gender: Joi.string()
-      .lowercase()
-      .valid("male", "female")
-      .required(),
+    gender: Joi.string().lowercase().valid("male", "female").required(),
 
-    description: Joi.string()
-      .trim()
-      .max(500),
+    description: Joi.string().trim().max(500),
 
     schedule: Joi.array()
       .items(
@@ -81,13 +54,9 @@ exports.signupDoctorSchema = {
       .required(),
 
     workingHours: Joi.object({
-      start: Joi.string()
-        .pattern(TIME_REGEX)
-        .required(),
+      start: Joi.string().pattern(TIME_REGEX).required(),
 
-      end: Joi.string()
-        .pattern(TIME_REGEX)
-        .required(),
+      end: Joi.string().pattern(TIME_REGEX).required(),
     })
       .required()
       .custom((value, helpers) => {
@@ -103,37 +72,36 @@ exports.signupDoctorSchema = {
   }),
 };
 
-exports.signupPatientSchema = {
+exports.resetPasswordSchema = {
+  params: Joi.object({
+    token: Joi.string().required(),
+  }),
+
   body: Joi.object({
-    name: Joi.string()
-      .trim()
-      .min(3)
-      .max(50)
-      .required(),
-
-    email: Joi.string()
-      .email()
-      .max(254)
-      .required(),
-
-    password: Joi.string()
-      .min(8)
-      .max(72)
-      .required(),
+    password: Joi.string().min(8).max(72).required(),
 
     passwordConfirm: Joi.string()
       .valid(Joi.ref("password"))
-      .required(),
+      .required()
+      .messages({
+        "any.only": "Passwords do not match",
+      }),
+  }),
+};
 
-    displayName: Joi.string()
-      .trim()
-      .min(3)
-      .max(50)
-      .required(),
+exports.signupPatientSchema = {
+  body: Joi.object({
+    name: Joi.string().trim().min(3).max(50).required(),
 
-    phone: Joi.string()
-      .pattern(PHONE_REGEX)
-      .required(),
+    email: Joi.string().email().max(254).required(),
+
+    password: Joi.string().min(8).max(72).required(),
+
+    passwordConfirm: Joi.string().valid(Joi.ref("password")).required(),
+
+    displayName: Joi.string().trim().min(3).max(50).required(),
+
+    phone: Joi.string().pattern(PHONE_REGEX).required(),
 
     bloodType: Joi.string()
       .valid(...BLOOD_TYPES)
@@ -143,20 +111,12 @@ exports.signupPatientSchema = {
 
 exports.updateUserSchema = {
   params: Joi.object({
-    id: Joi.string()
-      .hex()
-      .length(24)
-      .required(),
+    id: Joi.string().hex().length(24).required(),
   }),
 
   body: Joi.object({
-    name: Joi.string()
-      .trim()
-      .min(3)
-      .max(50),
+    name: Joi.string().trim().min(3).max(50),
 
-    email: Joi.string()
-      .email()
-      .max(254),
+    email: Joi.string().email().max(254),
   }).min(1),
 };

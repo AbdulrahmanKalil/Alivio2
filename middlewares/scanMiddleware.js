@@ -28,7 +28,7 @@ exports.uploadScanImage = multer({
 }).single("medicalScan");
 
 // ─── AI Config ───────────────────────────────────────────────
-const AI_BASE_URL = "https://morefaat69-medical-ai-api.hf.space";
+const AI_BASE_URL = process.env.AI_BASE_URL;
 const SCAN_ENDPOINTS = {
   skin: "/predict/skin",
   breast: "/predict/breast",
