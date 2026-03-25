@@ -3,10 +3,13 @@ const router = express.Router();
 
 const authController = require("../controllers/authController");
 const scanController = require("../controllers/scanController");
+const chatWithModel = require("../middlewares/chatWithModel");
 const {
   uploadScanImage,
   analyzeScan,
 } = require("../middlewares/scanMiddleware");
+
+router.post("/chat", chatWithModel.chatWithModel);
 
 router.use(authController.protect);
 
