@@ -1,17 +1,13 @@
 const express = require("express");
 const router = express.Router();
-
-const authController = require("../controllers/authController");
+const { protect, restrictTo } = require("../middlewares/authMiddleware");
 const scanController = require("../controllers/scanController");
-const chatWithModel = require("../middlewares/chatWithModel");
-const {
-  uploadScanImage,
-  analyzeScan,
-} = require("../middlewares/scanMiddleware");
 
-router.post("/chat", chatWithModel.chatWithModel);
+const chatService = require("../services/chatService");
+const { uploadScanImage, analyzeScan } = require("../services/scanService");
 
-router.use(authController.protect);
+router.post("/chat", chatService.chatWithModel);
+router.use(protect);
 
 router
   .route("/")

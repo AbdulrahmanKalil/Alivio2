@@ -1,5 +1,5 @@
 const Doctor = require("../models/doctorModel");
-const factory = require("../controllers/handlerFactory");
+const factory = require("../services/factoryService");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");

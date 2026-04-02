@@ -4,7 +4,7 @@ const APIFeatures = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
 const Doctor = require("../models/doctorModel");
 const Patient = require("../models/patientModel");
-const { mapAppointments } = require("../utils/appointmentMapper");
+const { mapAppointments } = require("../utils/helpers/appointmentMapper");
 const mongoose = require("mongoose");
 
 exports.setDoctorId = (req, res, next) => {

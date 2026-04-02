@@ -1,6 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const Prescription = require("../models/PrescriptionModels");
+const Prescription = require("../models/prescriptionModel");
 const Appointment = require("../models/appointmentModel");
 const Doctor = require("../models/doctorModel");
 const Patient = require("../models/patientModel");

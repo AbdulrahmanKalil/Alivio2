@@ -1,7 +1,7 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Scan = require("../models/scanModel");
-const cloudinary = require("../utils/cloudinary");
+const cloudinary = require("../services/cloudinaryService");
 
 // 1. رفع صورة وتحليلها بالـ AI
 exports.uploadScan = catchAsync(async (req, res, next) => {

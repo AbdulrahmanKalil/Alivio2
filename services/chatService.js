@@ -35,6 +35,6 @@ exports.chatWithModel = async (req, res) => {
     });
   } catch (err) {
     console.error("AI Error:", err.message);
-    res.status(500).json({ message: "AI service error" });
+    return next(new AppError("AI service error", 500));
   }
 };

@@ -1,12 +1,12 @@
 /* eslint-disable no-shadow */
 const Patient = require("../models/patientModel");
 const catchAsync = require("../utils/catchAsync");
-const factory = require("../controllers/handlerFactory");
+const factory = require("../services/factoryService");
 const apiFeatures = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
 const Appointment = require("../models/appointmentModel");
 const mongoose = require("mongoose");
-const prescription = require("../models/PrescriptionModels");
+const Prescription = require("../models/prescriptionModel");
 
 // getMyProfile
 exports.getMyProfile = catchAsync(async (req, res, next) => {

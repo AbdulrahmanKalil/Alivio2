@@ -1,6 +1,6 @@
 const express = require("express");
 const doctorController = require("../controllers/doctorController");
-const authController = require("../controllers/authController");
+const authController = require("../controllers/authController"); const { protect, restrictTo } = require("../middlewares/authMiddleware");
 const appointmentRouter = require("./appointmentRoutes");
 const validate = require("../middlewares/validationMiddleware");
 const { updateDoctorSchema } = require("../utils/validators/doctorValidator");
@@ -12,15 +12,15 @@ const router = express.Router();
 router
   .route("/")
   .get(
-    authController.protect,
-    authController.restrictTo("admin", "patient"),
+    protect,
+    restrictTo("admin", "patient"),
     doctorController.getAllDoctors,
   );
 
 router.get(
   "/me",
-  authController.protect,
-  authController.restrictTo("doctor"),
+  protect,
+  restrictTo("doctor"),
   doctorController.getMyProfile,
 );
 
@@ -31,27 +31,28 @@ router
   .route("/:id")
   .get(
     validate(doctorIdSchema),
-    authController.protect,
-    authController.restrictTo("doctor", "patient", "admin"),
+    protect,
+    restrictTo("doctor", "patient", "admin"),
     doctorController.getDoctor,
   )
   .patch(
     validate(updateDoctorSchema),
-    authController.protect,
-    authController.restrictTo("doctor"),
+    protect,
+    restrictTo("doctor"),
     doctorController.updateDoctor,
   );
 // .delete(
 //   validate(doctorIdSchema),
-//   authController.protect,
+//   protect,
 //   doctorController.deleteDoctor,
 // );
 
 // router.get(
 //   "/:id/schedule",
 //   validate(doctorIdSchema),
-//   authController.protect,
+//   protect,
 //   doctorController.getDoctorSchedule,
 // );
 
 module.exports = router;
+

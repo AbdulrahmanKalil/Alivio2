@@ -1,6 +1,7 @@
 const express = require("express");
 const userController = require("../controllers/userController");
 const authController = require("../controllers/authController");
+const { protect, restrictTo } = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/uploadMiddleware");
 
 const validate = require("../middlewares/validationMiddleware");
@@ -14,7 +15,7 @@ const router = express.Router();
 // ───────── Upload Routes ─────────
 router.patch(
   "/updatePhoto",
-  authController.protect,
+  protect,
   upload.single("profilePic"),
   userController.updatePhoto,
 );
@@ -50,3 +51,4 @@ router
   .delete(userController.deleteUser);
 
 module.exports = router;
+

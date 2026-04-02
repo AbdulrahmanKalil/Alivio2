@@ -1,14 +1,14 @@
 const express = require("express");
 
-const authController = require("../controllers/authController");
+const authController = require("../controllers/authController"); const { protect, restrictTo } = require("../middlewares/authMiddleware");
 const appointmentController = require("../controllers/appointmentController");
 
 const router = express.Router({ mergeParams: true });
 
 router.post(
   "/",
-  authController.protect,
-  authController.restrictTo("patient", "admin"),
+  protect,
+  restrictTo("patient", "admin"),
   appointmentController.setDoctorId,
   appointmentController.bookAppointment,
 );
@@ -17,29 +17,30 @@ router.post(
 router
   .route("/")
   .get(
-    authController.protect,
-    authController.restrictTo("admin"),
+    protect,
+    restrictTo("admin"),
     appointmentController.getAllAppointments,
   );
 
 router.get(
   "/my-appointments",
-  authController.protect,
-  authController.restrictTo("doctor", "patient"),
+  protect,
+  restrictTo("doctor", "patient"),
   appointmentController.getMyAppointments,
 );
 
 router.patch(
   "/:id/status",
-  authController.protect,
-  authController.restrictTo("doctor"),
+  protect,
+  restrictTo("doctor"),
   appointmentController.cancelAppointmentByDoctor,
 );
 router.patch(
   "/:id/cancel",
-  authController.protect,
-  authController.restrictTo("patient"),
+  protect,
+  restrictTo("patient"),
   appointmentController.cancelAppointmentByPatient,
 );
 
 module.exports = router;
+
