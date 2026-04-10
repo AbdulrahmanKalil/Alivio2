@@ -2,6 +2,7 @@ const express = require("express");
 const authController = require("../controllers/authController");
 const { protect, restrictTo } = require("../middlewares/authMiddleware");
 const prescriptionController = require("../controllers/prescriptionController");
+
 const router = express.Router();
 
 router
