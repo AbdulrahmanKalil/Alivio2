@@ -9,6 +9,20 @@ const emailService = require("../services/emailService");
 const Doctor = require("../models/doctorModel");
 const Patient = require("../models/patientModel");
 // ================= AUTH =================
+const createSendToken = (user, statusCode, res) => {
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  });
+
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 const signupPatient = catchAsync(async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -149,7 +163,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
   )}/api/v1/users/resetPassword/${resetToken}`;
 
   try {
-    await sendEmail({
+    await emailService({
       email: user.email,
       subject: "Password Reset",
       message: `Reset your password: ${resetURL}`,
