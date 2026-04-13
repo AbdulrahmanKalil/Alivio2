@@ -22,10 +22,10 @@ router.get(
 );
 
 router.get(
-  "/myMedicalHistory",
+  "/:id/MedicalHistory",
   protect,
   restrictTo("patient", "doctor"),
-  patientController.getMymedicalHistory,
+  patientController.getmedicalHistory,
 );
 
 router.get(

@@ -56,11 +56,11 @@ exports.createPrescription = catchAsync(async (req, res, next) => {
 
   const prescription = await Prescription.create({
     appointment: appointmentId,
-    doctor: req.user.doctorId,
+    doctor: doctor._id,
     patient: appointment.patient,
-    diagnosis: req.body.diagnosis,
-    medications: req.body.medications,
-    notes: req.body.notes,
+    diagnosis,
+    medications,
+    notes,
   });
   res.status(201).json({
     status: "success",

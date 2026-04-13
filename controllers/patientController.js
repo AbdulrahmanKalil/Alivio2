@@ -62,16 +62,15 @@ exports.getMyPatients = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getMymedicalHistory = catchAsync(async (req, res, next) => {
+exports.getmedicalHistory = catchAsync(async (req, res, next) => {
   const patient = await Patient.findOne({ user: req.user.id });
 
   if (!patient) {
     return next(new AppError("Patient not found", 404));
   }
-  const medicalHistory = await prescription
-    .find({
-      patient: patient._id,
-    })
+  const medicalHistory = await Prescription.find({
+    patient: patient._id,
+  })
     .populate({
       path: "doctor",
       select: "displayName specialty",
