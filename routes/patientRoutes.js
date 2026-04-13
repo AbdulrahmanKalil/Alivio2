@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
 const express = require("express");
 
-const authController = require("../controllers/authController"); const { protect, restrictTo } = require("../middlewares/authMiddleware");
+const authController = require("../controllers/authController");
+const { protect, restrictTo } = require("../middlewares/authMiddleware");
 const patientController = require("../controllers/patientController");
 const { updatePatientSchema } = require("../utils/validators/patientValidator");
 const validate = require("../middlewares/validationMiddleware");
@@ -11,11 +12,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(
-    protect,
-    restrictTo("admin"),
-    patientController.getAllPatients,
-  );
+  .get(protect, restrictTo("admin"), patientController.getAllPatients);
 
 router.get(
   "/my-patients",
@@ -27,7 +24,7 @@ router.get(
 router.get(
   "/myMedicalHistory",
   protect,
-  restrictTo("patient"),
+  restrictTo("patient", "doctor"),
   patientController.getMymedicalHistory,
 );
 
@@ -59,4 +56,3 @@ router
   );
 
 module.exports = router;
-
