@@ -14,7 +14,7 @@ const scanStorage = new CloudinaryStorage({
   }),
 });
 
-// ─── 1. ميدل وير الرفع (تصدير مباشر) ──────────────────────────
+// ─── 1. ميدل وير الرفع ────────────────────────────────────────
 exports.uploadScanImage = multer({
   storage: scanStorage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
@@ -29,6 +29,7 @@ exports.uploadScanImage = multer({
 
 // ─── AI Config ───────────────────────────────────────────────
 const AI_BASE_URL = process.env.AI_BASE_URL;
+
 const SCAN_ENDPOINTS = {
   skin: "/predict/skin",
   breast: "/predict/breast",
@@ -39,32 +40,59 @@ const SCAN_ENDPOINTS = {
   kidney: "/predict/kidney",
 };
 
-// ─── 2. ميدل وير التحليل (تصدير مباشر) ────────────────────────
+// ─── 2. ميدل وير التحليل ─────────────────────────────────────
 exports.analyzeScan = async (req, res, next) => {
-  if (!req.file) return next(new AppError("Please upload an image", 400));
+  if (!req.file) {
+    return next(new AppError("Please upload an image", 400));
+  }
 
   const scanType = req.body.scanType;
-  if (!scanType || !SCAN_ENDPOINTS[scanType])
+  if (!scanType || !SCAN_ENDPOINTS[scanType]) {
     return next(new AppError("Invalid scan type", 400));
+  }
 
   try {
+    // 🧠 1. تحميل الصورة من Cloudinary كـ buffer
+    const imageResponse = await axios.get(req.file.path, {
+      responseType: "arraybuffer",
+    });
+
+    // 🧠 2. تحويلها لـ form-data
     const formData = new FormData();
-    formData.append("file", req.file.buffer, {
-      filename: req.file.originalname,
+    formData.append("file", imageResponse.data, {
+      filename: req.file.originalname || "scan.jpg",
       contentType: req.file.mimetype,
     });
 
+    // 🧠 3. إرسالها للـ AI
     const aiResponse = await axios.post(
       `${AI_BASE_URL}${SCAN_ENDPOINTS[scanType]}`,
       formData,
-      { headers: { ...formData.getHeaders() }, timeout: 60000 },
+      {
+        headers: {
+          ...formData.getHeaders(),
+        },
+        timeout: 60000,
+      },
     );
 
+    // 🧠 4. حفظ النتيجة
     req.aiResult = aiResponse.data;
     req.aiStatus = "completed";
+
     next();
   } catch (err) {
-    return next(new AppError("AI analysis failed, operation cancelled", 500));
+    // 🔥 logging حقيقي مش وهمي
+    console.error("🔥 AI ERROR:");
+    console.error("Message:", err.message);
+    console.error("Response:", err.response?.data);
+
+    return next(
+      new AppError(
+        err.response?.data?.message || err.message || "AI analysis failed",
+        500,
+      ),
+    );
   }
 };
 

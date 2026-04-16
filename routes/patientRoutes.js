@@ -39,7 +39,7 @@ router
   .get(
     validate(patientIdSchema),
     protect,
-    restrictTo("admin"),
+    restrictTo("admin", "doctor"),
     patientController.getPatient,
   )
   .patch(
