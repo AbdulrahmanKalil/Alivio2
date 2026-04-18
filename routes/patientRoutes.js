@@ -22,10 +22,18 @@ router.get(
 );
 
 router.get(
-  "/:id/MedicalHistory",
+  "/medical-history",
   protect,
-  restrictTo("patient", "doctor"),
-  patientController.getmedicalHistory,
+  restrictTo("patient"),
+  patientController.getMyMedicalHistory,
+);
+
+/// 🔵 للدكتور (يجيب تاريخ مريض معين)
+router.get(
+  "/:id/medical-history",
+  protect,
+  restrictTo("doctor"),
+  patientController.getPatientMedicalHistory,
 );
 
 router.get(

@@ -1,5 +1,6 @@
 /* eslint-disable no-shadow */
 const Patient = require("../models/patientModel");
+const Doctor = require("../models/doctorModel");
 const catchAsync = require("../utils/catchAsync");
 const factory = require("../services/factoryService");
 const apiFeatures = require("../utils/apiFeatures");
@@ -62,27 +63,60 @@ exports.getMyPatients = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getmedicalHistory = catchAsync(async (req, res, next) => {
-  const patient = await Patient.findOne({ user: req.user.id });
+exports.getPatientMedicalHistory = catchAsync(async (req, res, next) => {
+  // 1) هات الدكتور من اليوزر
+  const doctor = await Doctor.findOne({ user: req.user.id });
 
+  if (!doctor) {
+    return next(new AppError("Doctor profile not found", 404));
+  }
+  // 1) تأكد إن المريض موجود
+  const patient = await Patient.findById(req.params.id);
   if (!patient) {
     return next(new AppError("Patient not found", 404));
   }
+
+  // 2) 🔐 تأكد إن الدكتور له علاقة بالمريض
+  const hasAccess = await Appointment.exists({
+    doctor: doctor._id,
+    patient: patient._id,
+  });
+
+  if (!hasAccess) {
+    return next(new AppError("Not authorized to view this patient", 403));
+  }
+
+  // 3) هات التاريخ الطبي
   const medicalHistory = await Prescription.find({
     patient: patient._id,
   })
-    .populate({
-      path: "doctor",
-      select: "displayName specialty",
-    })
-    .populate({
-      path: "patient",
-      select: "displayName ",
-    })
-    .populate({
-      path: "appointment",
-      select: "startTime",
-    });
+    .populate({ path: "doctor", select: "displayName specialty" })
+    .populate({ path: "patient", select: "displayName" })
+    .populate({ path: "appointment", select: "startTime" })
+    .lean();
+
+  res.status(200).json({
+    status: "success",
+    results: medicalHistory.length,
+    data: medicalHistory,
+  });
+});
+
+exports.getMyMedicalHistory = catchAsync(async (req, res, next) => {
+  // 1) هات الـ patient المرتبط باليوزر
+  const patient = await Patient.findOne({ user: req.user.id });
+
+  if (!patient) {
+    return next(new AppError("Patient profile not found", 404));
+  }
+
+  // 2) هات التاريخ الطبي
+  const medicalHistory = await Prescription.find({
+    patient: patient._id,
+  })
+    .populate({ path: "doctor", select: "displayName specialty" })
+    .populate({ path: "appointment", select: "startTime" })
+    .lean();
 
   res.status(200).json({
     status: "success",
