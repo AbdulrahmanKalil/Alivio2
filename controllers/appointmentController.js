@@ -4,6 +4,7 @@ const APIFeatures = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
 const Doctor = require("../models/doctorModel");
 const Patient = require("../models/patientModel");
+const factory = require("../services/factoryService");
 const { mapAppointments } = require("../utils/helpers/appointmentMapper");
 const mongoose = require("mongoose");
 
@@ -257,5 +258,25 @@ exports.cancelAppointmentByPatient = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: { appointment: cleanAppointment[0] },
+  });
+});
+
+exports.getAppointment = catchAsync(async (req, res, next) => {
+  const doctor = await Doctor.findOne({ user: req.user.id });
+
+  const appointment = await Appointment.findOne({
+    _id: req.params.id,
+    doctor: doctor._id,
+  }).populate("patient", "name email");
+
+  if (!appointment) {
+    return next(new AppError("Appointment not found", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      appointment,
+    },
   });
 });

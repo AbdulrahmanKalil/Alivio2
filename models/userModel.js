@@ -26,10 +26,13 @@ const userSchema = new mongoose.Schema(
 
     passwordConfirm: {
       type: String,
-      required: [true, "Please confirm your password"],
       validate: {
         validator: function (el) {
-          return el === this.password;
+          // يعمل validate بس لو الباسورد بيتغير
+          if (this.isModified("password")) {
+            return el === this.password;
+          }
+          return true;
         },
         message: "Passwords are not the same",
       },

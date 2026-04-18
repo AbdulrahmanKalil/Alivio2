@@ -5,66 +5,98 @@ const cloudinary = require("cloudinary").v2;
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const User = require("../models/userModel");
+const factory = require("../services/factoryService");
 
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-  res.status(200).json({
-    status: "success",
-    results: users.length,
-    data: {
-      users,
-    },
+// 🧠 helper
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
   });
-});
-
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
-  });
+  return newObj;
 };
 
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
-  });
-};
-
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
-  });
-};
-
+// ───────── Update Photo ─────────
 exports.updatePhoto = catchAsync(async (req, res, next) => {
   if (!req.file) {
     return next(new AppError("برجاء رفع صورة", 400));
   }
 
-  // جيب اليوزر عشان تشوف الصورة القديمة
   const user = await User.findById(req.user.id);
 
-  // امسح الصورة القديمة من Cloudinary لو موجودة
-  if (user.profilePic && user.profilePic.public_id) {
-    await cloudinary.uploader.destroy(user.profilePic.public_id);
+  if (!user) {
+    return next(new AppError("User not found", 404));
   }
 
-  // حفظ الصورة الجديدة
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user.id,
-    {
-      profilePic: {
-        url: req.file.path,
-        public_id: req.file.filename,
-      },
-    },
-    { new: true },
-  );
+  // حذف الصورة القديمة
+  if (user.profilePic?.public_id) {
+    try {
+      await cloudinary.uploader.destroy(user.profilePic.public_id);
+    } catch (err) {
+      console.error("Cloudinary delete failed:", err.message);
+    }
+  }
+
+  // تحديث الصورة
+  user.profilePic = {
+    url: req.file.path,
+    public_id: req.file.filename,
+  };
+
+  await user.save();
 
   res.status(200).json({
     status: "success",
-    data: { user: updatedUser },
+    data: { user },
   });
 });
+
+// ───────── Get Me ─────────
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+
+// ───────── Update Me ─────────
+exports.updateMe = catchAsync(async (req, res, next) => {
+  // ❌ منع تغيير الباسورد
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new AppError(
+        "This route is not for password updates. Please use /updateMyPassword.",
+        400,
+      ),
+    );
+  }
+
+  const filteredBody = filterObj(req.body, "name", "email");
+
+  if (req.file) {
+    filteredBody.profilePic = {
+      url: req.file.path,
+      public_id: req.file.filename,
+    };
+  }
+
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  Object.assign(user, filteredBody);
+  await user.save();
+
+  res.status(200).json({
+    status: "success",
+    data: { user },
+  });
+});
+
+// ───────── Factory Controllers ─────────
+exports.getUser = factory.getOne(User);
+exports.getAllUsers = factory.getAll(User);
+
+// ⚠️ admin only
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);

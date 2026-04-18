@@ -125,8 +125,33 @@ exports.getMyMedicalHistory = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.createPatient = catchAsync(async (req, res, next) => {
+  // 1) تأكد إن اليوزر مسجل دخول
+  if (!req.user) {
+    return next(new AppError("You are not logged in", 401));
+  }
+
+  // 2) امنع إنشاء أكتر من profile لنفس اليوزر
+  const existingPatient = await Patient.findOne({ user: req.user.id });
+
+  if (existingPatient) {
+    return next(new AppError("You already have a patient profile", 400));
+  }
+
+  // 3) إنشاء المريض
+  const patient = await Patient.create({
+    ...req.body,
+    user: req.user.id, // 🔥 أهم سطر
+  });
+
+  res.status(201).json({
+    status: "success",
+    data: patient,
+  });
+});
+
 exports.getAllPatients = factory.getAll(Patient);
 exports.getPatient = factory.getOne(Patient);
-exports.createPatient = factory.createOne(Patient);
+
 exports.updatePatient = factory.updateOne(Patient);
 exports.deletePatient = factory.deleteOne(Patient);

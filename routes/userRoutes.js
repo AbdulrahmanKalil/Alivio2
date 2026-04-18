@@ -42,6 +42,9 @@ router.patch(
 );
 
 // ───────── User CRUD ─────────
+router.get("/me", protect, userController.getMe, userController.getUser);
+router.patch("/updateMe", protect, userController.updateMe);
+
 router.route("/").get(userController.getAllUsers);
 
 router
@@ -51,4 +54,3 @@ router
   .delete(userController.deleteUser);
 
 module.exports = router;
-

@@ -222,7 +222,7 @@ const updatePassword = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
-console.log("TEST CHANGE");
+
 // ================= EXPORT =================
 module.exports = {
   signupPatient,

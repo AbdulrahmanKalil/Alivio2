@@ -10,6 +10,13 @@ const { patientIdSchema } = require("../utils/validators/patientValidator");
 
 const router = express.Router();
 
+router.post(
+  "/",
+  protect,
+  restrictTo("admin"), // أو شيلها لو عايز أي حد يعمل
+  patientController.createPatient,
+);
+
 router
   .route("/")
   .get(protect, restrictTo("admin"), patientController.getAllPatients);

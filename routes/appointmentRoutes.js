@@ -1,6 +1,7 @@
 const express = require("express");
 
-const authController = require("../controllers/authController"); const { protect, restrictTo } = require("../middlewares/authMiddleware");
+const authController = require("../controllers/authController");
+const { protect, restrictTo } = require("../middlewares/authMiddleware");
 const appointmentController = require("../controllers/appointmentController");
 
 const router = express.Router({ mergeParams: true });
@@ -16,17 +17,20 @@ router.post(
 // All Appointment
 router
   .route("/")
-  .get(
-    protect,
-    restrictTo("admin"),
-    appointmentController.getAllAppointments,
-  );
+  .get(protect, restrictTo("admin"), appointmentController.getAllAppointments);
 
 router.get(
   "/my-appointments",
   protect,
   restrictTo("doctor", "patient"),
   appointmentController.getMyAppointments,
+);
+
+router.get(
+  "/:id",
+  protect,
+  restrictTo("doctor", "admin"),
+  appointmentController.getAppointment,
 );
 
 router.patch(
@@ -43,4 +47,3 @@ router.patch(
 );
 
 module.exports = router;
-
