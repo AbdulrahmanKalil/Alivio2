@@ -16,19 +16,45 @@ exports.setDoctorId = (req, res, next) => {
 };
 
 exports.bookAppointment = catchAsync(async (req, res, next) => {
-  const patientId = req.user.patientId;
-  const doctorId = req.params.doctorId;
+  const doctorId = req.body.doctor;
 
+  // 1) Check doctor
   const doctor = await Doctor.findById(doctorId).lean();
-
   if (!doctor) {
     return next(new AppError("Doctor not found", 404));
   }
 
+  // 2) Determine patient based on role
+  if (req.user.role === "patient") {
+    // المريض بيحجز لنفسه
+    const patient = await Patient.findOne({ user: req.user._id });
+
+    if (!patient) {
+      return next(new AppError("Patient not found", 404));
+    }
+  } else if (req.user.role === "admin") {
+    // الأدمن لازم يبعت patient id
+    const patientId = req.body.patient;
+
+    if (!patientId) {
+      return next(new AppError("Patient ID is required for admin", 400));
+    }
+
+    patient = await Patient.findById(patientId);
+
+    if (!patient) {
+      return next(new AppError("Patient not found", 404));
+    }
+  } else {
+    return next(new AppError("Unauthorized role", 403));
+  }
+
+  // 3) Time calculation
   const start = new Date(req.body.startTime);
   const duration = 15;
   const end = new Date(start.getTime() + duration * 60000);
 
+  // 4) Check conflict
   const conflict = await Appointment.findOne({
     doctor: doctorId,
     startTime: { $lt: end },
@@ -39,8 +65,9 @@ exports.bookAppointment = catchAsync(async (req, res, next) => {
     return next(new AppError("This time slot is already booked", 400));
   }
 
+  // 5) Create appointment
   const appointment = await Appointment.create({
-    patient: patientId._id,
+    patient: patient._id,
     doctor: doctor._id,
     startTime: start,
     endTime: end,
