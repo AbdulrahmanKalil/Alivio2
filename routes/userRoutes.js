@@ -27,11 +27,11 @@ router.post(
   authController.signupPatient,
 );
 
-router.post(
-  "/signup/doctor",
-  validate(signupDoctorSchema),
-  authController.signupDoctor,
-);
+// router.post(
+//   "/signup/doctor",
+//   validate(signupDoctorSchema),
+//   authController.signupDoctor,
+// );
 
 router.post("/login", authController.login);
 router.post("/forgotPassword", authController.forgotPassword);

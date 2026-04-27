@@ -69,60 +69,6 @@ const signupPatient = catchAsync(async (req, res, next) => {
     throw err; // catchAsync handles it
   }
 });
-const signupDoctor = catchAsync(async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    // 1️⃣ Create User
-    const user = await User.create(
-      [
-        {
-          name: req.body.name,
-          email: req.body.email,
-          password: req.body.password,
-          passwordConfirm: req.body.passwordConfirm,
-          role: "doctor",
-        },
-      ],
-      { session },
-    );
-
-    // 2️⃣ Create Doctor Profile
-    const doctor = await Doctor.create(
-      [
-        {
-          user: user[0]._id,
-
-          displayName: req.body.displayName,
-          phone: req.body.phone,
-          specialty: req.body.specialty,
-          yearsOfExperience: req.body.yearsOfExperience,
-          price: req.body.price,
-          schedule: req.body.schedule,
-          workingHours: {
-            start: req.body.workingHours.start,
-            end: req.body.workingHours.end,
-          },
-          gender: req.body.gender,
-          description: req.body.description,
-        },
-      ],
-      { session },
-    );
-
-    // 3️⃣ Commit Transaction
-    await session.commitTransaction();
-    session.endSession();
-
-    createSendToken(user[0], 201, res);
-  } catch (err) {
-    // ❌ Rollback if anything fails
-    await session.abortTransaction();
-    session.endSession();
-    throw err; // catchAsync will handle it
-  }
-});
 
 const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
@@ -226,9 +172,9 @@ const updatePassword = catchAsync(async (req, res, next) => {
 // ================= EXPORT =================
 module.exports = {
   signupPatient,
-  signupDoctor,
   login,
   forgotPassword,
   resetPassword,
   updatePassword,
+  createSendToken,
 };

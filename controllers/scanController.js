@@ -21,6 +21,7 @@ exports.uploadScan = catchAsync(async (req, res, next) => {
     aiResult: req.aiResult,
     status: "completed",
     user: req.user.id,
+    patient: patient._id,
   });
 
   res.status(201).json({

@@ -57,7 +57,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // ───────── Body Parser ─────────
-app.use(express.json({ limit: "10kb" }));
+app.use(express.json({ limit: "1mb" }));
 
 // ───────── Security Sanitizers ─────────
 app.use(mongoSanitize());
@@ -75,7 +75,7 @@ app.use("/api/v1/patients", patientRouter);
 app.use("/api/v1/appointments", appointmentRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/prescriptions", prescriptionRouter);
-app.use("/api/v1/scans", scanRouter); // ✅ إضافة
+app.use("/api/v1/scans", scanRouter);
 
 // ───────── Health Check / Home Route ─────────
 app.get("/", (req, res) => {
