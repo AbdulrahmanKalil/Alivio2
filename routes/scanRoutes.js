@@ -14,9 +14,13 @@ router
   .get(scanController.getMyScan) // جلب الفحوصات
   .post(uploadScanImage, analyzeScan, scanController.uploadScan);
 
-router
-  .route("/:id")
-  .get(scanController.getScan)
-  .delete(scanController.deleteScan);
+router.get(
+  "/doctor/:id",
+  protect,
+  restrictTo("doctor"),
+  scanController.getDoctorScan,
+);
+
+router.route("/:id").delete(scanController.deleteScan);
 
 module.exports = router;

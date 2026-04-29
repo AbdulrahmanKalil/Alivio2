@@ -22,7 +22,7 @@ const router = express.Router();
 
 router.post(
   "/createDoctor",
-  // validate(signupDoctorSchema),
+  validate(signupDoctorSchema),
   doctorController.createDoctor,
 );
 

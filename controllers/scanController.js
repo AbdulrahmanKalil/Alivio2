@@ -2,6 +2,10 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Scan = require("../models/scanModel");
 const cloudinary = require("../services/cloudinaryService");
+const Patient = require("../models/patientModel");
+const User = require("../models/userModel");
+const Appointment = require("../models/appointmentModel");
+const Doctor = require("../models/doctorModel");
 
 // 1. رفع صورة وتحليلها بالـ AI
 exports.uploadScan = catchAsync(async (req, res, next) => {
@@ -21,7 +25,7 @@ exports.uploadScan = catchAsync(async (req, res, next) => {
     aiResult: req.aiResult,
     status: "completed",
     user: req.user.id,
-    patient: patient._id,
+    patient: req.user.patientId, // ← هنا التغيير
   });
 
   res.status(201).json({
@@ -58,12 +62,23 @@ exports.deleteScan = catchAsync(async (req, res, next) => {
   res.status(204).json({ status: "success", data: null });
 });
 
-// 4. جلب فحص واحد
-exports.getScan = catchAsync(async (req, res, next) => {
+// الدكتور يشوف scan مريض عنده appointment معاه
+exports.getDoctorScan = catchAsync(async (req, res, next) => {
   const scan = await Scan.findById(req.params.id);
-  if (!scan) return next(new AppError("لم يتم العثور على الفحص", 404));
-  if (scan.user.toString() !== req.user.id)
-    return next(new AppError("غير مصرح لك بمشاهدة هذا الفحص", 403));
+
+  if (!scan) {
+    return next(new AppError("لم يتم العثور على هذا الفحص", 404));
+  }
+
+  // تحقق إن الدكتور عنده appointment مع صاحب الـ scan
+  const appointment = await Appointment.findOne({
+    doctor: req.user.doctorId,
+    patient: scan.patient,
+  });
+
+  if (!appointment) {
+    return next(new AppError("ليس لديك صلاحية لعرض هذا الفحص", 403));
+  }
 
   res.status(200).json({
     status: "success",

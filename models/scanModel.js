@@ -31,6 +31,10 @@ const scanSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "المستخدم مطلوب"],
     },
+    patient: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Patient",
+    },
   },
   {
     timestamps: true,
