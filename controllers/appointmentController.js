@@ -307,3 +307,30 @@ exports.getAppointment = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getPatientScansForDoctor = catchAsync(async (req, res, next) => {
+  const { appointmentId } = req.params;
+
+  // 1) جيب الـ appointment وتأكد إنه موجود
+  const appointment = await Appointment.findById(appointmentId);
+  if (!appointment) {
+    return next(new AppError("Appointment not found", 404));
+  }
+
+  // 2) تأكد إن الدكتور اللي بيطلب هو نفس دكتور الـ appointment
+  const doctor = await Doctor.findOne({ user: req.user.id });
+  if (appointment.doctor.toString() !== doctor.id) {
+    return next(new AppError("Not authorized", 403));
+  }
+
+  // 3) جيب السكانز الخاصة بالـ appointment ده
+  const scans = await Scan.find({ appointment: appointmentId })
+    .sort("-createdAt")
+    .lean();
+
+  res.status(200).json({
+    status: "success",
+    results: scans.length,
+    data: { scans },
+  });
+});

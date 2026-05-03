@@ -85,3 +85,27 @@ exports.getDoctorScan = catchAsync(async (req, res, next) => {
     data: { scan },
   });
 });
+
+
+exports.getPatientScans = catchAsync(async (req, res, next) => {
+    // 1) هات الـ patient المرتبط باليوزر
+  const patient = await Patient.findOne({ user: req.user.id });
+
+  if (!patient) {
+    return next(new AppError("Patient profile not found", 404));
+  }
+
+  const scans = await Scan.find({ patient: patient.id })
+  .sort("-createdAt")
+  .populate({ path: "doctor", select: "displayName specialty" })
+  .populate({ path: "patient", select: "displayName" })
+  .populate({ path: "scan", select: "aiResult scanType imageUrl" })
+  .lean()
+  ;
+
+  res.status(200).json({
+    status: "success",
+    results: scans.length,
+    data: { scans },
+  });
+});

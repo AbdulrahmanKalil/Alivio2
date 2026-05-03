@@ -8,7 +8,7 @@ const AppError = require("../utils/appError");
 const Appointment = require("../models/appointmentModel");
 const mongoose = require("mongoose");
 const Prescription = require("../models/prescriptionModel");
-
+const Scan = require("../models/scanModel");
 // getMyProfile
 exports.getMyProfile = catchAsync(async (req, res, next) => {
   const patient = await Patient.findOne({ user: req.user.id }).populate(
@@ -147,6 +147,36 @@ exports.createPatient = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: "success",
     data: patient,
+  });
+});
+
+exports.getPatientScansForDoctor = catchAsync(async (req, res, next) => {
+  const { patientId } = req.params;
+
+  // 1) تأكد إن الدكتور موجود
+  const doctor = await Doctor.findOne({ user: req.user.id });
+  if (!doctor) {
+    return next(new AppError("Doctor profile not found", 404));
+  }
+
+  // 2) تأكد إن في appointment بين الدكتور ده والمريض ده
+  const appointment = await Appointment.findOne({
+    doctor: doctor.id,
+    patient: patientId,
+  });
+  if (!appointment) {
+    return next(new AppError("Not authorized", 403));
+  }
+
+  // 3) جيب السكانز
+  const scans = await Scan.find({ patient: patientId })
+    .sort("-createdAt")
+    .lean();
+
+  res.status(200).json({
+    status: "success",
+    results: scans.length,
+    data: { scans },
   });
 });
 

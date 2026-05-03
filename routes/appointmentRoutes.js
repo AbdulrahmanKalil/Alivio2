@@ -45,5 +45,11 @@ router.patch(
   restrictTo("patient"),
   appointmentController.cancelAppointmentByPatient,
 );
+router.get(
+  "/appointments/:appointmentId/scans",
+  protect,
+  restrictTo("doctor"),
+  appointmentController.getPatientScansForDoctor,
+);
 
 module.exports = router;

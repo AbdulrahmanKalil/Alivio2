@@ -69,5 +69,11 @@ router
     restrictTo("admin"),
     patientController.deletePatient,
   );
+router.get(
+  "/:patientId/scans",
+  protect,
+  restrictTo("doctor"),
+  patientController.getPatientScansForDoctor,
+);
 
 module.exports = router;
