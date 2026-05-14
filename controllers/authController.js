@@ -41,6 +41,9 @@ const signupPatient = catchAsync(async (req, res, next) => {
       ],
       { session },
     );
+    console.log("BODY:", req.body);
+    console.log("DOB:", req.body.dateOfBirth);
+    console.log("TYPE:", typeof req.body.dateOfBirth);
 
     // 2️⃣ Create Patient
     const patient = await Patient.create(
@@ -51,6 +54,8 @@ const signupPatient = catchAsync(async (req, res, next) => {
           phone: req.body.phone,
           address: req.body.address,
           bloodType: req.body.bloodType,
+          dateOfBirth: req.body.dateOfBirth,
+          medicalHistory: req.body.medicalHistory, // Optional, can be empty array or not provided
           // chronicConditions default from schema
         },
       ],

@@ -97,12 +97,21 @@ exports.signupPatientSchema = {
 
     phone: Joi.string().pattern(PHONE_REGEX).required(),
 
+    dateOfBirth: Joi.date().required(),
+
     bloodType: Joi.string()
       .valid(...BLOOD_TYPES)
       .default("Unknown"),
+
+    address: Joi.object({
+      street: Joi.string(),
+      city: Joi.string(),
+      country: Joi.string(),
+    }),
+
+    medicalHistory: Joi.string().allow("").default("None"),
   }),
 };
-
 exports.updateUserSchema = {
   params: Joi.object({
     id: Joi.string().hex().length(24).required(),
