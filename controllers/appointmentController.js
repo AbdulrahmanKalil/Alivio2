@@ -14,20 +14,23 @@ exports.setDoctorId = (req, res, next) => {
   }
   next();
 };
-
 exports.bookAppointment = catchAsync(async (req, res, next) => {
   const doctorId = req.body.doctor;
 
   // 1) Check doctor
   const doctor = await Doctor.findById(doctorId).lean();
+
   if (!doctor) {
     return next(new AppError("Doctor not found", 404));
   }
 
+  // مهم جدًا
+  let patient;
+
   // 2) Determine patient based on role
   if (req.user.role === "patient") {
     // المريض بيحجز لنفسه
-    const patient = await Patient.findOne({ user: req.user._id });
+    patient = await Patient.findOne({ user: req.user._id });
 
     if (!patient) {
       return next(new AppError("Patient not found", 404));
@@ -49,8 +52,12 @@ exports.bookAppointment = catchAsync(async (req, res, next) => {
     return next(new AppError("Unauthorized role", 403));
   }
 
-  // 3) Time calculation
   const start = new Date(req.body.startTime);
+
+  if (isNaN(start.getTime())) {
+    return next(new AppError("Invalid startTime", 400));
+  }
+
   const duration = 15;
   const end = new Date(start.getTime() + duration * 60000);
 
