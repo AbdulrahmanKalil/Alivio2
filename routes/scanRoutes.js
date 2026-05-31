@@ -14,11 +14,12 @@ router
   .get(scanController.getMyScan) // جلب الفحوصات
   .post(uploadScanImage, analyzeScan, scanController.uploadScan);
 
-router.get(
-  "/doctor/:id",
+router.get("/doctor/:id", protect, scanController.getDoctorScan);
+router.patch(
+  "/:id/notes",
   protect,
   restrictTo("doctor"),
-  scanController.getDoctorScan,
+  scanController.addDoctorNotes,
 );
 
 router.route("/:id").delete(scanController.deleteScan);

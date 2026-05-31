@@ -24,6 +24,7 @@ exports.uploadScan = catchAsync(async (req, res, next) => {
     scanType: req.body.scanType,
     aiResult: req.aiResult,
     status: "completed",
+    notes: req.body.notes ?? null,
     user: req.user.id,
     patient: req.user.patientId, // ← هنا التغيير
   });
@@ -85,27 +86,24 @@ exports.getDoctorScan = catchAsync(async (req, res, next) => {
     data: { scan },
   });
 });
+exports.addDoctorNotes = catchAsync(async (req, res, next) => {
+  const scan = await Scan.findByIdAndUpdate(
+    req.params.id,
+    {
+      notes: req.body.notes,
+    },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
 
-
-exports.getPatientScans = catchAsync(async (req, res, next) => {
-    // 1) هات الـ patient المرتبط باليوزر
-  const patient = await Patient.findOne({ user: req.user.id });
-
-  if (!patient) {
-    return next(new AppError("Patient profile not found", 404));
+  if (!scan) {
+    return next(new AppError("Scan not found", 404));
   }
-
-  const scans = await Scan.find({ patient: patient.id })
-  .sort("-createdAt")
-  .populate({ path: "doctor", select: "displayName specialty" })
-  .populate({ path: "patient", select: "displayName" })
-  .populate({ path: "scan", select: "aiResult scanType imageUrl" })
-  .lean()
-  ;
 
   res.status(200).json({
     status: "success",
-    results: scans.length,
-    data: { scans },
+    data: { scan },
   });
 });
