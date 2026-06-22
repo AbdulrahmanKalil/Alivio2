@@ -107,3 +107,22 @@ exports.addDoctorNotes = catchAsync(async (req, res, next) => {
     data: { scan },
   });
 });
+
+exports.getRecentScans = catchAsync(async (req, res, next) => {
+  const scans = await Scan.find({
+    user: req.user.id,
+  })
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .select(
+      "scanType status notes imageUrl createdAt aiResult.predicted_class aiResult.confidence",
+    );
+
+  res.status(200).json({
+    status: "success",
+    results: scans.length,
+    data: {
+      scans,
+    },
+  });
+});

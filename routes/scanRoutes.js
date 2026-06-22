@@ -21,6 +21,12 @@ router.patch(
   restrictTo("doctor"),
   scanController.addDoctorNotes,
 );
+router.get(
+  "/recent",
+  protect,
+  restrictTo("patient"),
+  scanController.getRecentScans,
+);
 
 router.route("/:id").delete(scanController.deleteScan);
 
